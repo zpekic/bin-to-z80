@@ -466,6 +466,11 @@ const generateLabel = (address: number): string => {
   return `L_${formatHex(address, 4)}`;
 };
 
+// Check if an address is within a given range
+const isAddressInRange = (address: number, start: number, end: number): boolean => {
+  return address >= start && address <= end;
+};
+
 // Find all jump and call destinations in the code
 const findLabelAddresses = (disassembly: {
   address: number;
@@ -566,15 +571,4 @@ export const disassembleBinary = (binary: Uint8Array, origin = 0): {
                   instruction.operands.startsWith('M, ')) {
           // For conditional jumps like "JR Z, 1234h"
           const parts = instruction.operands.split(', ');
-          if (parts.length === 2 && parts[1].includes('h')) {
-            instruction.operands = `${parts[0]}, ${label}`;
-          }
-        }
-      }
-    }
-  }
-  
-  return result;
-};
-
-// Check
+          if (parts.length === 2 && parts[1].includes
