@@ -1,4 +1,3 @@
-
 // Z80 disassembler implementation
 // This is a simplified version - a real implementation would be more comprehensive
 
@@ -11,6 +10,16 @@ type Z80Instruction = {
   comment?: string;
   address?: number;
   targetAddress?: number;
+};
+
+// Helper function to convert printable ASCII bytes to character representation
+const formatByteValue = (byteValue: number): string => {
+  // Check if the byte is in the printable ASCII range (0x20 to 0x7F)
+  if (byteValue >= 0x20 && byteValue <= 0x7F) {
+    return `${byteValue}h '${String.fromCharCode(byteValue)}'`;
+  }
+  // Otherwise, just return the hex value
+  return `${byteValue}h`;
 };
 
 // Simple Z80 instruction set (subset for demonstration)
@@ -28,14 +37,14 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   0x05: () => ({ mnemonic: 'DEC', operands: 'B', bytes: [0x05], size: 1 }),
   0x06: (bytes, i) => ({
     mnemonic: 'LD',
-    operands: `B, ${bytes[i+1]}h`,
+    operands: `B, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x06, bytes[i+1]],
     size: 2
   }),
   0x0A: () => ({ mnemonic: 'LD', operands: 'A, (BC)', bytes: [0x0A], size: 1 }),
   0x0E: (bytes, i) => ({
     mnemonic: 'LD',
-    operands: `C, ${bytes[i+1]}h`,
+    operands: `C, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x0E, bytes[i+1]],
     size: 2
   }),
@@ -64,7 +73,7 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   }),
   0x3E: (bytes, i) => ({
     mnemonic: 'LD',
-    operands: `A, ${bytes[i+1]}h`,
+    operands: `A, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x3E, bytes[i+1]],
     size: 2
   }),
@@ -106,7 +115,7 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   0x15: () => ({ mnemonic: 'DEC', operands: 'D', bytes: [0x15], size: 1 }),
   0x16: (bytes, i) => ({
     mnemonic: 'LD',
-    operands: `D, ${bytes[i+1]}h`,
+    operands: `D, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x16, bytes[i+1]],
     size: 2
   }),
@@ -118,7 +127,7 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   0x1D: () => ({ mnemonic: 'DEC', operands: 'E', bytes: [0x1D], size: 1 }),
   0x1E: (bytes, i) => ({
     mnemonic: 'LD',
-    operands: `E, ${bytes[i+1]}h`,
+    operands: `E, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x1E, bytes[i+1]],
     size: 2
   }),
@@ -146,7 +155,7 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   0x25: () => ({ mnemonic: 'DEC', operands: 'H', bytes: [0x25], size: 1 }),
   0x26: (bytes, i) => ({
     mnemonic: 'LD',
-    operands: `H, ${bytes[i+1]}h`,
+    operands: `H, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x26, bytes[i+1]],
     size: 2
   }),
@@ -173,7 +182,7 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   0x2D: () => ({ mnemonic: 'DEC', operands: 'L', bytes: [0x2D], size: 1 }),
   0x2E: (bytes, i) => ({
     mnemonic: 'LD',
-    operands: `L, ${bytes[i+1]}h`,
+    operands: `L, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x2E, bytes[i+1]],
     size: 2
   }),
@@ -207,7 +216,7 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   0x35: () => ({ mnemonic: 'DEC', operands: '(HL)', bytes: [0x35], size: 1 }),
   0x36: (bytes, i) => ({
     mnemonic: 'LD',
-    operands: `(HL), ${bytes[i+1]}h`,
+    operands: `(HL), ${formatByteValue(bytes[i+1])}`,
     bytes: [0x36, bytes[i+1]],
     size: 2
   }),
@@ -315,7 +324,7 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   0xC5: () => ({ mnemonic: 'PUSH', operands: 'BC', bytes: [0xC5], size: 1 }),
   0xC6: (bytes, i) => ({
     mnemonic: 'ADD',
-    operands: `A, ${bytes[i+1]}h`,
+    operands: `A, ${formatByteValue(bytes[i+1])}`,
     bytes: [0xC6, bytes[i+1]],
     size: 2
   }),
@@ -342,7 +351,7 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   },
   0xCE: (bytes, i) => ({
     mnemonic: 'ADC',
-    operands: `A, ${bytes[i+1]}h`,
+    operands: `A, ${formatByteValue(bytes[i+1])}`,
     bytes: [0xCE, bytes[i+1]],
     size: 2
   }),
@@ -379,7 +388,7 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   0xD5: () => ({ mnemonic: 'PUSH', operands: 'DE', bytes: [0xD5], size: 1 }),
   0xD6: (bytes, i) => ({
     mnemonic: 'SUB',
-    operands: `${bytes[i+1]}h`,
+    operands: `${formatByteValue(bytes[i+1])}`,
     bytes: [0xD6, bytes[i+1]],
     size: 2
   }),
@@ -419,7 +428,7 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   0xE5: () => ({ mnemonic: 'PUSH', operands: 'HL', bytes: [0xE5], size: 1 }),
   0xE6: (bytes, i) => ({
     mnemonic: 'AND',
-    operands: `${bytes[i+1]}h`,
+    operands: `${formatByteValue(bytes[i+1])}`,
     bytes: [0xE6, bytes[i+1]],
     size: 2
   }),
@@ -427,7 +436,7 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   0xEB: () => ({ mnemonic: 'EX', operands: 'DE, HL', bytes: [0xEB], size: 1 }),
   0xEE: (bytes, i) => ({
     mnemonic: 'XOR',
-    operands: `${bytes[i+1]}h`,
+    operands: `${formatByteValue(bytes[i+1])}`,
     bytes: [0xEE, bytes[i+1]],
     size: 2
   }),
@@ -438,7 +447,7 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   0xF5: () => ({ mnemonic: 'PUSH', operands: 'AF', bytes: [0xF5], size: 1 }),
   0xF6: (bytes, i) => ({
     mnemonic: 'OR',
-    operands: `${bytes[i+1]}h`,
+    operands: `${formatByteValue(bytes[i+1])}`,
     bytes: [0xF6, bytes[i+1]],
     size: 2
   }),
@@ -446,7 +455,7 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   0xFB: () => ({ mnemonic: 'EI', operands: '', bytes: [0xFB], size: 1 }),
   0xFE: (bytes, i) => ({
     mnemonic: 'CP',
-    operands: `${bytes[i+1]}h`,
+    operands: `${formatByteValue(bytes[i+1])}`,
     bytes: [0xFE, bytes[i+1]],
     size: 2
   }),
@@ -561,24 +570,4 @@ export const disassembleBinary = (binary: Uint8Array, origin = 0): {
         // Replace the hex address with the label in the operands
         const hexAddress = `${targetAddress}h`;
         if (instruction.operands.includes(hexAddress)) {
-          instruction.operands = instruction.operands.replace(hexAddress, label);
-        } else if (instruction.operands.startsWith('NZ, ') || 
-                  instruction.operands.startsWith('Z, ') || 
-                  instruction.operands.startsWith('NC, ') || 
-                  instruction.operands.startsWith('C, ') ||
-                  instruction.operands.startsWith('PO, ') || 
-                  instruction.operands.startsWith('PE, ') || 
-                  instruction.operands.startsWith('P, ') || 
-                  instruction.operands.startsWith('M, ')) {
-          // For conditional jumps like "JR Z, 1234h"
-          const parts = instruction.operands.split(', ');
-          if (parts.length === 2 && parts[1].includes('h')) {
-            instruction.operands = `${parts[0]}, ${label}`;
-          }
-        }
-      }
-    }
-  }
-  
-  return result;
-};
+          instruction.operands = instruction.operands.replace(hexAddress, label
