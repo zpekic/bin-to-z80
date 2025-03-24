@@ -1,3 +1,4 @@
+
 // Z80 disassembler implementation
 // This is a simplified version - a real implementation would be more comprehensive
 
@@ -571,4 +572,13 @@ export const disassembleBinary = (binary: Uint8Array, origin = 0): {
                   instruction.operands.startsWith('M, ')) {
           // For conditional jumps like "JR Z, 1234h"
           const parts = instruction.operands.split(', ');
-          if (parts.length === 2 && parts[1].includes
+          if (parts.length === 2 && parts[1].includes('h')) {
+            instruction.operands = `${parts[0]}, ${label}`;
+          }
+        }
+      }
+    }
+  }
+  
+  return result;
+};
