@@ -1,4 +1,3 @@
-
 // Z80 disassembler implementation
 // This is a simplified version - a real implementation would be more comprehensive
 
@@ -9,6 +8,8 @@ type Z80Instruction = {
   bytes: number[];
   size: number;
   comment?: string;
+  address?: number;
+  targetAddress?: number;
 };
 
 // Simple Z80 instruction set (subset for demonstration)
@@ -43,12 +44,17 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
     bytes: [0x11, bytes[i+1], bytes[i+2]],
     size: 3
   }),
-  0x18: (bytes, i) => ({
-    mnemonic: 'JR',
-    operands: `${(bytes[i+1] & 0x80) ? '-' : '+'}${bytes[i+1] & 0x7F}`,
-    bytes: [0x18, bytes[i+1]],
-    size: 2
-  }),
+  0x18: (bytes, i) => {
+    const offset = bytes[i+1];
+    const targetAddress = (i + 2 + ((offset & 0x80) ? (offset - 256) : offset)) & 0xFFFF;
+    return {
+      mnemonic: 'JR',
+      operands: `${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
+      bytes: [0x18, offset],
+      size: 2,
+      targetAddress
+    };
+  },
   0x21: (bytes, i) => ({
     mnemonic: 'LD',
     operands: `HL, ${bytes[i+1] + (bytes[i+2] << 8)}h`,
@@ -62,23 +68,29 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
     size: 2
   }),
   0x76: () => ({ mnemonic: 'HALT', operands: '', bytes: [0x76], size: 1 }),
-  0xC3: (bytes, i) => ({
-    mnemonic: 'JP',
-    operands: `${bytes[i+1] + (bytes[i+2] << 8)}h`,
-    bytes: [0xC3, bytes[i+1], bytes[i+2]],
-    size: 3
-  }),
+  0xC3: (bytes, i) => {
+    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
+    return {
+      mnemonic: 'JP',
+      operands: `${targetAddress}h`,
+      bytes: [0xC3, bytes[i+1], bytes[i+2]],
+      size: 3,
+      targetAddress
+    };
+  },
   0xC9: () => ({ mnemonic: 'RET', operands: '', bytes: [0xC9], size: 1 }),
-  0xCD: (bytes, i) => ({
-    mnemonic: 'CALL',
-    operands: `${bytes[i+1] + (bytes[i+2] << 8)}h`,
-    bytes: [0xCD, bytes[i+1], bytes[i+2]],
-    size: 3
-  }),
+  0xCD: (bytes, i) => {
+    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
+    return {
+      mnemonic: 'CALL',
+      operands: `${targetAddress}h`,
+      bytes: [0xCD, bytes[i+1], bytes[i+2]],
+      size: 3,
+      targetAddress
+    };
+  },
   
-  // Additional opcodes:
-  
-  // 8-bit load group
+  // Additional opcodes
   0x02: () => ({ mnemonic: 'LD', operands: '(BC), A', bytes: [0x02], size: 1 }),
   0x07: () => ({ mnemonic: 'RLCA', operands: '', bytes: [0x07], size: 1 }),
   0x08: () => ({ mnemonic: 'EX', operands: 'AF, AF\'', bytes: [0x08], size: 1 }),
@@ -111,12 +123,17 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   }),
   0x1F: () => ({ mnemonic: 'RRA', operands: '', bytes: [0x1F], size: 1 }),
   
-  0x20: (bytes, i) => ({
-    mnemonic: 'JR',
-    operands: `NZ, ${(bytes[i+1] & 0x80) ? '-' : '+'}${bytes[i+1] & 0x7F}`,
-    bytes: [0x20, bytes[i+1]],
-    size: 2
-  }),
+  0x20: (bytes, i) => {
+    const offset = bytes[i+1];
+    const targetAddress = (i + 2 + ((offset & 0x80) ? (offset - 256) : offset)) & 0xFFFF;
+    return {
+      mnemonic: 'JR',
+      operands: `NZ, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
+      bytes: [0x20, offset],
+      size: 2,
+      targetAddress
+    };
+  },
   0x22: (bytes, i) => ({
     mnemonic: 'LD',
     operands: `(${bytes[i+1] + (bytes[i+2] << 8)}h), HL`,
@@ -132,12 +149,17 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
     bytes: [0x26, bytes[i+1]],
     size: 2
   }),
-  0x28: (bytes, i) => ({
-    mnemonic: 'JR',
-    operands: `Z, ${(bytes[i+1] & 0x80) ? '-' : '+'}${bytes[i+1] & 0x7F}`,
-    bytes: [0x28, bytes[i+1]],
-    size: 2
-  }),
+  0x28: (bytes, i) => {
+    const offset = bytes[i+1];
+    const targetAddress = (i + 2 + ((offset & 0x80) ? (offset - 256) : offset)) & 0xFFFF;
+    return {
+      mnemonic: 'JR',
+      operands: `Z, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
+      bytes: [0x28, offset],
+      size: 2,
+      targetAddress
+    };
+  },
   0x29: () => ({ mnemonic: 'ADD', operands: 'HL, HL', bytes: [0x29], size: 1 }),
   0x2A: (bytes, i) => ({
     mnemonic: 'LD',
@@ -156,12 +178,17 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   }),
   
   // 8-bit arithmetic & logical group
-  0x30: (bytes, i) => ({
-    mnemonic: 'JR',
-    operands: `NC, ${(bytes[i+1] & 0x80) ? '-' : '+'}${bytes[i+1] & 0x7F}`,
-    bytes: [0x30, bytes[i+1]],
-    size: 2
-  }),
+  0x30: (bytes, i) => {
+    const offset = bytes[i+1];
+    const targetAddress = (i + 2 + ((offset & 0x80) ? (offset - 256) : offset)) & 0xFFFF;
+    return {
+      mnemonic: 'JR',
+      operands: `NC, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
+      bytes: [0x30, offset],
+      size: 2,
+      targetAddress
+    };
+  },
   0x31: (bytes, i) => ({
     mnemonic: 'LD',
     operands: `SP, ${bytes[i+1] + (bytes[i+2] << 8)}h`,
@@ -183,12 +210,17 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
     bytes: [0x36, bytes[i+1]],
     size: 2
   }),
-  0x38: (bytes, i) => ({
-    mnemonic: 'JR',
-    operands: `C, ${(bytes[i+1] & 0x80) ? '-' : '+'}${bytes[i+1] & 0x7F}`,
-    bytes: [0x38, bytes[i+1]],
-    size: 2
-  }),
+  0x38: (bytes, i) => {
+    const offset = bytes[i+1];
+    const targetAddress = (i + 2 + ((offset & 0x80) ? (offset - 256) : offset)) & 0xFFFF;
+    return {
+      mnemonic: 'JR',
+      operands: `C, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
+      bytes: [0x38, offset],
+      size: 2,
+      targetAddress
+    };
+  },
   0x39: () => ({ mnemonic: 'ADD', operands: 'HL, SP', bytes: [0x39], size: 1 }),
   0x3A: (bytes, i) => ({
     mnemonic: 'LD',
@@ -259,18 +291,26 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   // Conditional Return instructions
   0xC0: () => ({ mnemonic: 'RET', operands: 'NZ', bytes: [0xC0], size: 1 }),
   0xC1: () => ({ mnemonic: 'POP', operands: 'BC', bytes: [0xC1], size: 1 }),
-  0xC2: (bytes, i) => ({
-    mnemonic: 'JP',
-    operands: `NZ, ${bytes[i+1] + (bytes[i+2] << 8)}h`,
-    bytes: [0xC2, bytes[i+1], bytes[i+2]],
-    size: 3
-  }),
-  0xC4: (bytes, i) => ({
-    mnemonic: 'CALL',
-    operands: `NZ, ${bytes[i+1] + (bytes[i+2] << 8)}h`,
-    bytes: [0xC4, bytes[i+1], bytes[i+2]],
-    size: 3
-  }),
+  0xC2: (bytes, i) => {
+    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
+    return {
+      mnemonic: 'JP',
+      operands: `NZ, ${targetAddress}h`,
+      bytes: [0xC2, bytes[i+1], bytes[i+2]],
+      size: 3,
+      targetAddress
+    };
+  },
+  0xC4: (bytes, i) => {
+    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
+    return {
+      mnemonic: 'CALL',
+      operands: `NZ, ${targetAddress}h`,
+      bytes: [0xC4, bytes[i+1], bytes[i+2]],
+      size: 3,
+      targetAddress
+    };
+  },
   0xC5: () => ({ mnemonic: 'PUSH', operands: 'BC', bytes: [0xC5], size: 1 }),
   0xC6: (bytes, i) => ({
     mnemonic: 'ADD',
@@ -279,18 +319,26 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
     size: 2
   }),
   0xC8: () => ({ mnemonic: 'RET', operands: 'Z', bytes: [0xC8], size: 1 }),
-  0xCA: (bytes, i) => ({
-    mnemonic: 'JP',
-    operands: `Z, ${bytes[i+1] + (bytes[i+2] << 8)}h`,
-    bytes: [0xCA, bytes[i+1], bytes[i+2]],
-    size: 3
-  }),
-  0xCC: (bytes, i) => ({
-    mnemonic: 'CALL',
-    operands: `Z, ${bytes[i+1] + (bytes[i+2] << 8)}h`,
-    bytes: [0xCC, bytes[i+1], bytes[i+2]],
-    size: 3
-  }),
+  0xCA: (bytes, i) => {
+    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
+    return {
+      mnemonic: 'JP',
+      operands: `Z, ${targetAddress}h`,
+      bytes: [0xCA, bytes[i+1], bytes[i+2]],
+      size: 3,
+      targetAddress
+    };
+  },
+  0xCC: (bytes, i) => {
+    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
+    return {
+      mnemonic: 'CALL',
+      operands: `Z, ${targetAddress}h`,
+      bytes: [0xCC, bytes[i+1], bytes[i+2]],
+      size: 3,
+      targetAddress
+    };
+  },
   0xCE: (bytes, i) => ({
     mnemonic: 'ADC',
     operands: `A, ${bytes[i+1]}h`,
@@ -301,24 +349,32 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   // More conditional instructions
   0xD0: () => ({ mnemonic: 'RET', operands: 'NC', bytes: [0xD0], size: 1 }),
   0xD1: () => ({ mnemonic: 'POP', operands: 'DE', bytes: [0xD1], size: 1 }),
-  0xD2: (bytes, i) => ({
-    mnemonic: 'JP',
-    operands: `NC, ${bytes[i+1] + (bytes[i+2] << 8)}h`,
-    bytes: [0xD2, bytes[i+1], bytes[i+2]],
-    size: 3
-  }),
+  0xD2: (bytes, i) => {
+    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
+    return {
+      mnemonic: 'JP',
+      operands: `NC, ${targetAddress}h`,
+      bytes: [0xD2, bytes[i+1], bytes[i+2]],
+      size: 3,
+      targetAddress
+    };
+  },
   0xD3: (bytes, i) => ({
     mnemonic: 'OUT',
     operands: `(${bytes[i+1]}h), A`,
     bytes: [0xD3, bytes[i+1]],
     size: 2
   }),
-  0xD4: (bytes, i) => ({
-    mnemonic: 'CALL',
-    operands: `NC, ${bytes[i+1] + (bytes[i+2] << 8)}h`,
-    bytes: [0xD4, bytes[i+1], bytes[i+2]],
-    size: 3
-  }),
+  0xD4: (bytes, i) => {
+    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
+    return {
+      mnemonic: 'CALL',
+      operands: `NC, ${targetAddress}h`,
+      bytes: [0xD4, bytes[i+1], bytes[i+2]],
+      size: 3,
+      targetAddress
+    };
+  },
   0xD5: () => ({ mnemonic: 'PUSH', operands: 'DE', bytes: [0xD5], size: 1 }),
   0xD6: (bytes, i) => ({
     mnemonic: 'SUB',
@@ -328,24 +384,32 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
   }),
   0xD8: () => ({ mnemonic: 'RET', operands: 'C', bytes: [0xD8], size: 1 }),
   0xD9: () => ({ mnemonic: 'EXX', operands: '', bytes: [0xD9], size: 1 }),
-  0xDA: (bytes, i) => ({
-    mnemonic: 'JP',
-    operands: `C, ${bytes[i+1] + (bytes[i+2] << 8)}h`,
-    bytes: [0xDA, bytes[i+1], bytes[i+2]],
-    size: 3
-  }),
+  0xDA: (bytes, i) => {
+    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
+    return {
+      mnemonic: 'JP',
+      operands: `C, ${targetAddress}h`,
+      bytes: [0xDA, bytes[i+1], bytes[i+2]],
+      size: 3,
+      targetAddress
+    };
+  },
   0xDB: (bytes, i) => ({
     mnemonic: 'IN',
     operands: `A, (${bytes[i+1]}h)`,
     bytes: [0xDB, bytes[i+1]],
     size: 2
   }),
-  0xDC: (bytes, i) => ({
-    mnemonic: 'CALL',
-    operands: `C, ${bytes[i+1] + (bytes[i+2] << 8)}h`,
-    bytes: [0xDC, bytes[i+1], bytes[i+2]],
-    size: 3
-  }),
+  0xDC: (bytes, i) => {
+    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
+    return {
+      mnemonic: 'CALL',
+      operands: `C, ${targetAddress}h`,
+      bytes: [0xDC, bytes[i+1], bytes[i+2]],
+      size: 3,
+      targetAddress
+    };
+  },
   
   // Stack and miscellaneous
   0xE0: () => ({ mnemonic: 'RET', operands: 'PO', bytes: [0xE0], size: 1 }),
@@ -397,6 +461,38 @@ export const bytesToHexString = (bytes: number[]): string => {
   return bytes.map(byte => formatHex(byte, 2)).join(' ');
 };
 
+// Generate a label for an address
+const generateLabel = (address: number): string => {
+  return `L_${formatHex(address, 4)}`;
+};
+
+// Find all jump and call destinations in the code
+const findLabelAddresses = (disassembly: {
+  address: number;
+  instruction: Z80Instruction;
+}[]): Set<number> => {
+  const labelAddresses = new Set<number>();
+  
+  for (const { instruction } of disassembly) {
+    if (instruction.targetAddress !== undefined) {
+      labelAddresses.add(instruction.targetAddress);
+    }
+  }
+  
+  return labelAddresses;
+};
+
+// Create a mapping of addresses to labels
+const createLabelMap = (labelAddresses: Set<number>): Map<number, string> => {
+  const labelMap = new Map<number, string>();
+  
+  labelAddresses.forEach(address => {
+    labelMap.set(address, generateLabel(address));
+  });
+  
+  return labelMap;
+};
+
 // Disassemble a binary file
 export const disassembleBinary = (binary: Uint8Array, origin = 0): {
   address: number;
@@ -405,12 +501,20 @@ export const disassembleBinary = (binary: Uint8Array, origin = 0): {
   const result: { address: number; instruction: Z80Instruction }[] = [];
   let index = 0;
 
+  // First pass - basic disassembly
   while (index < binary.length) {
     const opcode = binary[index];
     const handler = Z80_OPCODES[opcode];
     
     if (handler) {
       const instruction = handler(binary, index);
+      // Store the absolute address
+      instruction.address = origin + index;
+      // Adjust targetAddress if it exists to be absolute
+      if (instruction.targetAddress !== undefined) {
+        instruction.targetAddress = origin + instruction.targetAddress;
+      }
+      
       result.push({
         address: origin + index,
         instruction
@@ -425,28 +529,52 @@ export const disassembleBinary = (binary: Uint8Array, origin = 0): {
           operands: `${formatHex(opcode, 2)}h`,
           bytes: [opcode],
           size: 1,
-          comment: 'Unknown opcode'
+          comment: 'Unknown opcode',
+          address: origin + index
         }
       });
       index += 1;
     }
   }
 
+  // Create label map
+  const labelAddresses = findLabelAddresses(result);
+  const labelMap = createLabelMap(labelAddresses);
+  
+  // Second pass - update operands for labels
+  for (const item of result) {
+    const { instruction } = item;
+    
+    // Only update operands for instructions that have targetAddress
+    if (instruction.targetAddress !== undefined) {
+      const targetAddress = instruction.targetAddress;
+      const label = labelMap.get(targetAddress);
+      
+      // Check if this target has a label and it's within our disassembly range
+      if (label && isAddressInRange(targetAddress, origin, origin + binary.length - 1)) {
+        // Replace the hex address with the label in the operands
+        const hexAddress = `${targetAddress}h`;
+        if (instruction.operands.includes(hexAddress)) {
+          instruction.operands = instruction.operands.replace(hexAddress, label);
+        } else if (instruction.operands.startsWith('NZ, ') || 
+                  instruction.operands.startsWith('Z, ') || 
+                  instruction.operands.startsWith('NC, ') || 
+                  instruction.operands.startsWith('C, ') ||
+                  instruction.operands.startsWith('PO, ') || 
+                  instruction.operands.startsWith('PE, ') || 
+                  instruction.operands.startsWith('P, ') || 
+                  instruction.operands.startsWith('M, ')) {
+          // For conditional jumps like "JR Z, 1234h"
+          const parts = instruction.operands.split(', ');
+          if (parts.length === 2 && parts[1].includes('h')) {
+            instruction.operands = `${parts[0]}, ${label}`;
+          }
+        }
+      }
+    }
+  }
+  
   return result;
 };
 
-// Format the disassembly as text
-export const formatDisassembly = (disassembly: {
-  address: number;
-  instruction: Z80Instruction;
-}[]): string => {
-  return disassembly
-    .map(({ address, instruction }) => {
-      const addressStr = formatHex(address, 4);
-      const bytesStr = bytesToHexString(instruction.bytes);
-      const instructionStr = `${instruction.mnemonic} ${instruction.operands}`.trim();
-      const commentStr = instruction.comment ? `; ${instruction.comment}` : '';
-      return `${addressStr}  ${bytesStr.padEnd(12)}  ${instructionStr.padEnd(20)} ${commentStr}`;
-    })
-    .join('\n');
-};
+// Check

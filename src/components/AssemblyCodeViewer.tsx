@@ -15,6 +15,7 @@ interface AssemblyCodeViewerProps {
       bytes: number[];
       size: number;
       comment?: string;
+      targetAddress?: number;
     };
   }[];
   fileName: string;
@@ -38,6 +39,8 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({ disassembly, fi
   const handleDownload = () => {
     if (disassembly.length === 0) return;
 
+    // Use the same formatting as in the formatDisassembly function
+    // to ensure consistent output between display and download
     const text = disassembly
       .map(({ address, instruction }) => {
         const addressStr = formatHex(address, 4);
@@ -66,6 +69,18 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({ disassembly, fi
   if (disassembly.length === 0) {
     return null;
   }
+
+  // Find all label addresses for display
+  const labelMap = new Map<number, string>();
+  disassembly.forEach(({ instruction }) => {
+    if (instruction.targetAddress !== undefined) {
+      // Check if target is within our disassembly
+      const targetInRange = disassembly.some(item => item.address === instruction.targetAddress);
+      if (targetInRange) {
+        labelMap.set(instruction.targetAddress!, `L_${formatHex(instruction.targetAddress!, 4)}`);
+      }
+    }
+  });
 
   return (
     <div className="space-y-4 w-full animate-fade-in">
@@ -98,22 +113,32 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({ disassembly, fi
       <Card className="w-full overflow-hidden border">
         <div className="overflow-x-auto code-block">
           <pre ref={codeRef} className="text-sm">
-            {disassembly.map(({ address, instruction }, index) => (
-              <div key={index} className="code-line">
-                <span className="code-address">{formatHex(address, 4)}:</span>
-                <span className="code-bytes">
-                  {instruction.bytes.map(b => formatHex(b, 2)).join(' ')}
-                </span>
-                <span className="code-instruction">
-                  <span className="code-mnemonic">{instruction.mnemonic}</span>
-                  {instruction.operands && <span>&nbsp;</span>}
-                  <span className="code-operand">{instruction.operands}</span>
-                </span>
-                {instruction.comment && (
-                  <span className="code-comment">{instruction.comment}</span>
-                )}
-              </div>
-            ))}
+            {disassembly.map(({ address, instruction }, index) => {
+              const label = labelMap.get(address);
+              return (
+                <React.Fragment key={index}>
+                  {label && (
+                    <div className="code-label">
+                      <span>{label}:</span>
+                    </div>
+                  )}
+                  <div className="code-line">
+                    <span className="code-address">{formatHex(address, 4)}:</span>
+                    <span className="code-bytes">
+                      {instruction.bytes.map(b => formatHex(b, 2)).join(' ')}
+                    </span>
+                    <span className="code-instruction">
+                      <span className="code-mnemonic">{instruction.mnemonic}</span>
+                      {instruction.operands && <span>&nbsp;</span>}
+                      <span className="code-operand">{instruction.operands}</span>
+                    </span>
+                    {instruction.comment && (
+                      <span className="code-comment">{instruction.comment}</span>
+                    )}
+                  </div>
+                </React.Fragment>
+              );
+            })}
           </pre>
         </div>
       </Card>
