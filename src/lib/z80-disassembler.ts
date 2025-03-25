@@ -1,3 +1,4 @@
+
 // Z80 disassembler implementation
 // This is a simplified version - a real implementation would be more comprehensive
 
@@ -570,4 +571,11 @@ export const disassembleBinary = (binary: Uint8Array, origin = 0): {
         // Replace the hex address with the label in the operands
         const hexAddress = `${targetAddress}h`;
         if (instruction.operands.includes(hexAddress)) {
-          instruction.operands = instruction.operands.replace(hexAddress, label
+          instruction.operands = instruction.operands.replace(hexAddress, label);
+        }
+      }
+    }
+  }
+  
+  return result;
+};
