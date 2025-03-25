@@ -8,6 +8,7 @@ export type Z80Instruction = {
   comment?: string;
   address?: number;
   targetAddress?: number;
+  isIOOperation?: boolean;
 };
 
 export type OpcodeHandler = (bytes: Uint8Array, index: number) => Z80Instruction;

@@ -1,4 +1,3 @@
-
 import { OpcodeHandler } from '../types';
 import { format16BitHex, formatByteValue } from '../formatters';
 
@@ -51,6 +50,7 @@ export const CONTROL_FLOW_OPCODES: Record<number, OpcodeHandler> = {
     size: 1,
     targetAddress: 0x0000
   }),
+  
   0xC8: () => ({ mnemonic: 'RET', operands: 'Z', bytes: [0xC8], size: 1 }),
   0xC9: () => ({ mnemonic: 'RET', operands: '', bytes: [0xC9], size: 1 }),
   0xCA: (bytes, i) => {
@@ -167,7 +167,7 @@ export const CONTROL_FLOW_OPCODES: Record<number, OpcodeHandler> = {
       size: 3,
       targetAddress
     };
-  },
+  }),
   0xDF: () => ({ 
     mnemonic: 'RST', 
     operands: '18h', 
