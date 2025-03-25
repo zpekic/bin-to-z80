@@ -357,6 +357,13 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
     bytes: [0xC6, bytes[i+1]],
     size: 2
   }),
+  0xC7: () => ({ 
+    mnemonic: 'RST', 
+    operands: '00h', 
+    bytes: [0xC7], 
+    size: 1,
+    targetAddress: 0x0000
+  }),
   0xC8: () => ({ mnemonic: 'RET', operands: 'Z', bytes: [0xC8], size: 1 }),
   0xCA: (bytes, i) => {
     const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
@@ -383,6 +390,13 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
     operands: `A, ${formatByteValue(bytes[i+1])}`,
     bytes: [0xCE, bytes[i+1]],
     size: 2
+  }),
+  0xCF: () => ({ 
+    mnemonic: 'RST', 
+    operands: '08h', 
+    bytes: [0xCF], 
+    size: 1,
+    targetAddress: 0x0008
   }),
   
   // More conditional instructions
@@ -421,6 +435,13 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
     bytes: [0xD6, bytes[i+1]],
     size: 2
   }),
+  0xD7: () => ({ 
+    mnemonic: 'RST', 
+    operands: '10h', 
+    bytes: [0xD7], 
+    size: 1,
+    targetAddress: 0x0010
+  }),
   0xD8: () => ({ mnemonic: 'RET', operands: 'C', bytes: [0xD8], size: 1 }),
   0xD9: () => ({ mnemonic: 'EXX', operands: '', bytes: [0xD9], size: 1 }),
   0xDA: (bytes, i) => {
@@ -449,6 +470,13 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
       targetAddress
     };
   },
+  0xDF: () => ({ 
+    mnemonic: 'RST', 
+    operands: '18h', 
+    bytes: [0xDF], 
+    size: 1,
+    targetAddress: 0x0018
+  }),
   
   // Stack and miscellaneous
   0xE0: () => ({ mnemonic: 'RET', operands: 'PO', bytes: [0xE0], size: 1 }),
@@ -461,6 +489,13 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
     bytes: [0xE6, bytes[i+1]],
     size: 2
   }),
+  0xE7: () => ({ 
+    mnemonic: 'RST', 
+    operands: '20h', 
+    bytes: [0xE7], 
+    size: 1,
+    targetAddress: 0x0020
+  }),
   0xE9: () => ({ mnemonic: 'JP', operands: '(HL)', bytes: [0xE9], size: 1 }),
   0xEB: () => ({ mnemonic: 'EX', operands: 'DE, HL', bytes: [0xEB], size: 1 }),
   0xEE: (bytes, i) => ({
@@ -468,6 +503,13 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
     operands: `${formatByteValue(bytes[i+1])}`,
     bytes: [0xEE, bytes[i+1]],
     size: 2
+  }),
+  0xEF: () => ({ 
+    mnemonic: 'RST', 
+    operands: '28h', 
+    bytes: [0xEF], 
+    size: 1,
+    targetAddress: 0x0028
   }),
   
   0xF0: () => ({ mnemonic: 'RET', operands: 'P', bytes: [0xF0], size: 1 }),
@@ -480,6 +522,13 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
     bytes: [0xF6, bytes[i+1]],
     size: 2
   }),
+  0xF7: () => ({ 
+    mnemonic: 'RST', 
+    operands: '30h', 
+    bytes: [0xF7], 
+    size: 1,
+    targetAddress: 0x0030
+  }),
   0xF9: () => ({ mnemonic: 'LD', operands: 'SP, HL', bytes: [0xF9], size: 1 }),
   0xFB: () => ({ mnemonic: 'EI', operands: '', bytes: [0xFB], size: 1 }),
   0xFE: (bytes, i) => ({
@@ -487,6 +536,13 @@ const Z80_OPCODES: Record<number, (bytes: Uint8Array, index: number) => Z80Instr
     operands: `${formatByteValue(bytes[i+1])}`,
     bytes: [0xFE, bytes[i+1]],
     size: 2
+  }),
+  0xFF: () => ({ 
+    mnemonic: 'RST', 
+    operands: '38h', 
+    bytes: [0xFF], 
+    size: 1,
+    targetAddress: 0x0038
   }),
 };
 
