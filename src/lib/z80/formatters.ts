@@ -10,12 +10,12 @@ export const format16BitHex = (value: number): string => {
 
 // Helper function to convert printable ASCII bytes to character representation
 export const formatByteValue = (byteValue: number): string => {
-  // Check if the byte is in the printable ASCII range (0x20 to 0x7F)
-  if (byteValue >= 0x20 && byteValue <= 0x7F) {
-    return `${byteValue}h '${String.fromCharCode(byteValue)}'`;
+  // Check if the byte is in the printable ASCII range (0x20 to 0x7E)
+  if (byteValue >= 0x20 && byteValue <= 0x7E) {
+    return `'${String.fromCharCode(byteValue)}' ; ${formatHex(byteValue, 2)}h`;
   }
   // Otherwise, just return the hex value
-  return `${byteValue}h`;
+  return `${formatHex(byteValue, 2)}h`;
 };
 
 // Convert binary data to array of bytes
