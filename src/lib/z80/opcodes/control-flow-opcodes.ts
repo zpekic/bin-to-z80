@@ -110,12 +110,6 @@ export const CONTROL_FLOW_OPCODES: Record<number, OpcodeHandler> = {
       targetAddress
     };
   },
-  0xD3: (bytes, i) => ({
-    mnemonic: 'OUT',
-    operands: `(${formatByteValue(bytes[i+1]).replace("'", "").replace("'", "")}), A`,
-    bytes: [0xD3, bytes[i+1]],
-    size: 2
-  }),
   0xD4: (bytes, i) => {
     const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
     return {
@@ -152,12 +146,6 @@ export const CONTROL_FLOW_OPCODES: Record<number, OpcodeHandler> = {
       targetAddress
     };
   },
-  0xDB: (bytes, i) => ({
-    mnemonic: 'IN',
-    operands: `A, (${formatByteValue(bytes[i+1]).replace("'", "").replace("'", "")})`,
-    bytes: [0xDB, bytes[i+1]],
-    size: 2
-  }),
   0xDC: (bytes, i) => {
     const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
     return {

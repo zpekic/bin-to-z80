@@ -4,6 +4,7 @@ import { BASIC_OPCODES } from './basic-opcodes';
 import { REGISTER_OPCODES } from './register-opcodes';
 import { ARITHMETIC_OPCODES } from './arithmetic-opcodes';
 import { CONTROL_FLOW_OPCODES } from './control-flow-opcodes';
+import { IO_OPCODES } from './io-opcodes';
 
 // Combine all opcode handlers into a single lookup table
 export const Z80_OPCODES: Record<number, OpcodeHandler> = {
@@ -11,4 +12,5 @@ export const Z80_OPCODES: Record<number, OpcodeHandler> = {
   ...REGISTER_OPCODES,
   ...ARITHMETIC_OPCODES,
   ...CONTROL_FLOW_OPCODES,
+  ...IO_OPCODES,
 };
