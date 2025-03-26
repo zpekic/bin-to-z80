@@ -167,7 +167,7 @@ export const CONTROL_FLOW_OPCODES: Record<number, OpcodeHandler> = {
       size: 3,
       targetAddress
     };
-  }),
+  },
   0xDF: () => ({ 
     mnemonic: 'RST', 
     operands: '18h', 
