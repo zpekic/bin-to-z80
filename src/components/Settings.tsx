@@ -21,7 +21,7 @@ interface SettingsProps {
 const Settings: React.FC<SettingsProps> = ({ 
   originAddress, 
   setOriginAddress,
-  outputFormat = 'assembly',
+  outputFormat = 'list',
   setOutputFormat = () => {} 
 }) => {
   const [addressInput, setAddressInput] = useState(originAddress.toString(16).toUpperCase());

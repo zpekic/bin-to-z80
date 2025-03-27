@@ -27,7 +27,7 @@ const Index = () => {
   const [fileName, setFileName] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [originAddress, setOriginAddress] = useState<number>(0x0000);
-  const [outputFormat, setOutputFormat] = useState<string>('assembly');
+  const [outputFormat, setOutputFormat] = useState<string>('list');
   const [disassembly, setDisassembly] = useState<ReturnType<typeof disassembleBinary>>([]);
   const [showInfo, setShowInfo] = useState<boolean>(false);
 

@@ -25,7 +25,7 @@ interface AssemblyCodeViewerProps {
 const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({ 
   disassembly, 
   fileName, 
-  outputFormat = 'assembly' 
+  outputFormat = 'list' 
 }) => {
   const codeRef = useRef<HTMLPreElement>(null);
 
