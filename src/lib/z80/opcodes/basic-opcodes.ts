@@ -197,6 +197,7 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
     bytes: [0x36, bytes[i+1]],
     size: 2
   }),
+  0x37: () => ({ mnemonic: 'SCF', operands: '', bytes: [0x37], size: 1 }),
   0x38: (bytes, i) => {
     const offset = bytes[i+1];
     const targetAddress = (i + 2 + ((offset & 0x80) ? (offset - 256) : offset)) & 0xFFFF;
@@ -227,4 +228,5 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
     bytes: [0x3E, bytes[i+1]],
     size: 2
   }),
+  0x3F: () => ({ mnemonic: 'CCF', operands: '', bytes: [0x3F], size: 1 }),
 };
