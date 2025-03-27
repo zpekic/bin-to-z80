@@ -43,4 +43,12 @@ export const ARITHMETIC_OPCODES: Record<number, OpcodeHandler> = {
   0xB5: () => ({ mnemonic: 'OR', operands: 'L', bytes: [0xB5], size: 1 }),
   0xB6: () => ({ mnemonic: 'OR', operands: '(HL)', bytes: [0xB6], size: 1 }),
   0xB7: () => ({ mnemonic: 'OR', operands: 'A', bytes: [0xB7], size: 1 }),
+  
+  // Immediate arithmetic operations
+  0xC6: (bytes, i) => ({
+    mnemonic: 'ADD',
+    operands: `A, ${formatByteValue(bytes[i+1])}`,
+    bytes: [0xC6, bytes[i+1]],
+    size: 2
+  }),
 };

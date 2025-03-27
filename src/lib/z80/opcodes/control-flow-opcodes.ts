@@ -1,3 +1,4 @@
+
 import { OpcodeHandler } from '../types';
 import { format16BitHex, formatByteValue } from '../formatters';
 
@@ -37,12 +38,6 @@ export const CONTROL_FLOW_OPCODES: Record<number, OpcodeHandler> = {
     };
   },
   0xC5: () => ({ mnemonic: 'PUSH', operands: 'BC', bytes: [0xC5], size: 1 }),
-  0xC6: (bytes, i) => ({
-    mnemonic: 'ADD',
-    operands: `A, ${formatByteValue(bytes[i+1])}`,
-    bytes: [0xC6, bytes[i+1]],
-    size: 2
-  }),
   0xC7: () => ({ 
     mnemonic: 'RST', 
     operands: '00h', 
