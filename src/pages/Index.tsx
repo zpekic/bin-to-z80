@@ -27,6 +27,7 @@ const Index = () => {
   const [fileName, setFileName] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [originAddress, setOriginAddress] = useState<number>(0x0000);
+  const [outputFormat, setOutputFormat] = useState<string>('assembly');
   const [disassembly, setDisassembly] = useState<ReturnType<typeof disassembleBinary>>([]);
   const [showInfo, setShowInfo] = useState<boolean>(false);
 
@@ -78,7 +79,11 @@ const Index = () => {
             
             {disassembly.length > 0 && (
               <div className="mt-6">
-                <AssemblyCodeViewer disassembly={disassembly} fileName={fileName} />
+                <AssemblyCodeViewer 
+                  disassembly={disassembly} 
+                  fileName={fileName} 
+                  outputFormat={outputFormat}
+                />
               </div>
             )}
           </div>
@@ -86,7 +91,9 @@ const Index = () => {
           <div className="space-y-6">
             <Settings 
               originAddress={originAddress} 
-              setOriginAddress={setOriginAddress} 
+              setOriginAddress={setOriginAddress}
+              outputFormat={outputFormat}
+              setOutputFormat={setOutputFormat}
             />
             
             <Card>

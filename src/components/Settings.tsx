@@ -3,15 +3,27 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 
 interface SettingsProps {
   originAddress: number;
   setOriginAddress: (address: number) => void;
+  outputFormat?: string;
+  setOutputFormat?: (format: string) => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ originAddress, setOriginAddress }) => {
+const Settings: React.FC<SettingsProps> = ({ 
+  originAddress, 
+  setOriginAddress,
+  outputFormat = 'assembly',
+  setOutputFormat = () => {} 
+}) => {
   const [addressInput, setAddressInput] = useState(originAddress.toString(16).toUpperCase());
   
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,6 +33,10 @@ const Settings: React.FC<SettingsProps> = ({ originAddress, setOriginAddress }) 
     if (!isNaN(parsedValue)) {
       setOriginAddress(parsedValue);
     }
+  };
+
+  const handleFormatChange = (value: string) => {
+    setOutputFormat(value);
   };
 
   return (
@@ -44,6 +60,22 @@ const Settings: React.FC<SettingsProps> = ({ originAddress, setOriginAddress }) 
               {originAddress.toString(16).toUpperCase().padStart(4, '0')}h
             </span>
           </div>
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="outputFormat">Output Format</Label>
+          <Select 
+            defaultValue={outputFormat} 
+            onValueChange={handleFormatChange}
+          >
+            <SelectTrigger id="outputFormat">
+              <SelectValue placeholder="Select format" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="assembly">Assembly Format</SelectItem>
+              <SelectItem value="list">List Format</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </CardContent>
     </Card>

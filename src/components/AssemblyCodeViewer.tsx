@@ -19,9 +19,14 @@ interface AssemblyCodeViewerProps {
     };
   }[];
   fileName: string;
+  outputFormat?: string;
 }
 
-const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({ disassembly, fileName }) => {
+const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({ 
+  disassembly, 
+  fileName, 
+  outputFormat = 'assembly' 
+}) => {
   const codeRef = useRef<HTMLPreElement>(null);
 
   const handleCopyToClipboard = async () => {
@@ -39,30 +44,53 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({ disassembly, fi
   const handleDownload = () => {
     if (disassembly.length === 0) return;
 
-    // Use the same formatting as in the formatDisassembly function
-    // to ensure consistent output between display and download
-    const text = disassembly
-      .map(({ address, instruction }) => {
-        const addressStr = formatHex(address, 4);
-        const bytesStr = instruction.bytes.map(b => formatHex(b, 2)).join(' ');
-        const instructionStr = `${instruction.mnemonic} ${instruction.operands}`.trim();
-        const commentStr = instruction.comment ? `; ${instruction.comment}` : '';
-        return `${addressStr}  ${bytesStr.padEnd(12)}  ${instructionStr.padEnd(20)} ${commentStr}`;
-      })
-      .join('\n');
+    const fileExtension = outputFormat === 'assembly' ? '.asm' : '.lst';
+    
+    // Format the output based on the selected format
+    let text;
+    if (outputFormat === 'assembly') {
+      text = disassembly
+        .map(({ address, instruction }) => {
+          const label = labelMap.get(address);
+          let line = '';
+          
+          if (label) {
+            line += `${label}:\n`;
+          }
+          
+          line += `        ${instruction.mnemonic} ${instruction.operands}`.trim();
+          if (instruction.comment) {
+            line += ` ; ${instruction.comment}`;
+          }
+          
+          return line;
+        })
+        .join('\n');
+    } else {
+      // List format with address and bytes
+      text = disassembly
+        .map(({ address, instruction }) => {
+          const addressStr = formatHex(address, 4);
+          const bytesStr = instruction.bytes.map(b => formatHex(b, 2)).join(' ');
+          const instructionStr = `${instruction.mnemonic} ${instruction.operands}`.trim();
+          const commentStr = instruction.comment ? `; ${instruction.comment}` : '';
+          return `${addressStr}  ${bytesStr.padEnd(12)}  ${instructionStr.padEnd(20)} ${commentStr}`;
+        })
+        .join('\n');
+    }
 
     const blob = new Blob([text], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = fileName.replace(/\.bin$/i, '') + '.asm';
+    a.download = fileName.replace(/\.bin$/i, '') + fileExtension;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
     toast.success('File downloaded', {
-      description: `Saved as ${fileName.replace(/\.bin$/i, '')}.asm`
+      description: `Saved as ${fileName.replace(/\.bin$/i, '')}${fileExtension}`
     });
   };
 
@@ -81,6 +109,62 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({ disassembly, fi
       }
     }
   });
+
+  // Render the disassembly based on the selected format
+  const renderDisassembly = () => {
+    if (outputFormat === 'assembly') {
+      return disassembly.map(({ address, instruction }, index) => {
+        const label = labelMap.get(address);
+        return (
+          <React.Fragment key={index}>
+            {label && (
+              <div className="code-label">
+                <span>{label}:</span>
+              </div>
+            )}
+            <div className="code-line">
+              <span className="code-instruction">
+                <span className="code-mnemonic">{instruction.mnemonic}</span>
+                {instruction.operands && <span>&nbsp;</span>}
+                <span className="code-operand">{instruction.operands}</span>
+              </span>
+              {instruction.comment && (
+                <span className="code-comment">{instruction.comment}</span>
+              )}
+            </div>
+          </React.Fragment>
+        );
+      });
+    } else {
+      // List format
+      return disassembly.map(({ address, instruction }, index) => {
+        const label = labelMap.get(address);
+        return (
+          <React.Fragment key={index}>
+            {label && (
+              <div className="code-label">
+                <span>{label}:</span>
+              </div>
+            )}
+            <div className="code-line">
+              <span className="code-address">{formatHex(address, 4)}:</span>
+              <span className="code-bytes">
+                {instruction.bytes.map(b => formatHex(b, 2)).join(' ')}
+              </span>
+              <span className="code-instruction">
+                <span className="code-mnemonic">{instruction.mnemonic}</span>
+                {instruction.operands && <span>&nbsp;</span>}
+                <span className="code-operand">{instruction.operands}</span>
+              </span>
+              {instruction.comment && (
+                <span className="code-comment">{instruction.comment}</span>
+              )}
+            </div>
+          </React.Fragment>
+        );
+      });
+    }
+  };
 
   return (
     <div className="space-y-4 w-full animate-fade-in">
@@ -105,7 +189,7 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({ disassembly, fi
             onClick={handleDownload}
           >
             <Download className="h-4 w-4" />
-            <span>Save as .asm</span>
+            <span>Save as {outputFormat === 'assembly' ? '.asm' : '.lst'}</span>
           </Button>
         </div>
       </div>
@@ -113,32 +197,7 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({ disassembly, fi
       <Card className="w-full overflow-hidden border">
         <div className="overflow-x-auto code-block">
           <pre ref={codeRef} className="text-sm">
-            {disassembly.map(({ address, instruction }, index) => {
-              const label = labelMap.get(address);
-              return (
-                <React.Fragment key={index}>
-                  {label && (
-                    <div className="code-label">
-                      <span>{label}:</span>
-                    </div>
-                  )}
-                  <div className="code-line">
-                    <span className="code-address">{formatHex(address, 4)}:</span>
-                    <span className="code-bytes">
-                      {instruction.bytes.map(b => formatHex(b, 2)).join(' ')}
-                    </span>
-                    <span className="code-instruction">
-                      <span className="code-mnemonic">{instruction.mnemonic}</span>
-                      {instruction.operands && <span>&nbsp;</span>}
-                      <span className="code-operand">{instruction.operands}</span>
-                    </span>
-                    {instruction.comment && (
-                      <span className="code-comment">{instruction.comment}</span>
-                    )}
-                  </div>
-                </React.Fragment>
-              );
-            })}
+            {renderDisassembly()}
           </pre>
         </div>
       </Card>
