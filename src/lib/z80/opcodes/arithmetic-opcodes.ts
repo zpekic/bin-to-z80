@@ -44,6 +44,16 @@ export const ARITHMETIC_OPCODES: Record<number, OpcodeHandler> = {
   0xB6: () => ({ mnemonic: 'OR', operands: '(HL)', bytes: [0xB6], size: 1 }),
   0xB7: () => ({ mnemonic: 'OR', operands: 'A', bytes: [0xB7], size: 1 }),
   
+  // CP r operations (compare, subtract without storing result)
+  0xB8: () => ({ mnemonic: 'CP', operands: 'B', bytes: [0xB8], size: 1, comment: 'Compare A with B' }),
+  0xB9: () => ({ mnemonic: 'CP', operands: 'C', bytes: [0xB9], size: 1, comment: 'Compare A with C' }),
+  0xBA: () => ({ mnemonic: 'CP', operands: 'D', bytes: [0xBA], size: 1, comment: 'Compare A with D' }),
+  0xBB: () => ({ mnemonic: 'CP', operands: 'E', bytes: [0xBB], size: 1, comment: 'Compare A with E' }),
+  0xBC: () => ({ mnemonic: 'CP', operands: 'H', bytes: [0xBC], size: 1, comment: 'Compare A with H' }),
+  0xBD: () => ({ mnemonic: 'CP', operands: 'L', bytes: [0xBD], size: 1, comment: 'Compare A with L' }),
+  0xBE: () => ({ mnemonic: 'CP', operands: '(HL)', bytes: [0xBE], size: 1, comment: 'Compare A with (HL)' }),
+  0xBF: () => ({ mnemonic: 'CP', operands: 'A', bytes: [0xBF], size: 1, comment: 'Compare A with A' }),
+  
   // Immediate arithmetic operations
   0xC6: (bytes, i) => ({
     mnemonic: 'ADD',
