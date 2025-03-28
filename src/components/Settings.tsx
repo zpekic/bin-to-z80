@@ -16,13 +16,17 @@ interface SettingsProps {
   setOriginAddress: (address: number) => void;
   outputFormat?: string;
   setOutputFormat?: (format: string) => void;
+  targetInstructionSet?: string;
+  setTargetInstructionSet?: (set: string) => void;
 }
 
 const Settings: React.FC<SettingsProps> = ({ 
   originAddress, 
   setOriginAddress,
   outputFormat = 'list',
-  setOutputFormat = () => {} 
+  setOutputFormat = () => {},
+  targetInstructionSet = 'Z80',
+  setTargetInstructionSet = () => {}
 }) => {
   const [addressInput, setAddressInput] = useState(originAddress.toString(16).toUpperCase());
   
@@ -37,6 +41,10 @@ const Settings: React.FC<SettingsProps> = ({
 
   const handleFormatChange = (value: string) => {
     setOutputFormat(value);
+  };
+
+  const handleInstructionSetChange = (value: string) => {
+    setTargetInstructionSet(value);
   };
 
   return (
@@ -60,6 +68,23 @@ const Settings: React.FC<SettingsProps> = ({
               {originAddress.toString(16).toUpperCase().padStart(4, '0')}h
             </span>
           </div>
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="targetInstructionSet">Target Instruction Set</Label>
+          <Select 
+            defaultValue={targetInstructionSet} 
+            onValueChange={handleInstructionSetChange}
+          >
+            <SelectTrigger id="targetInstructionSet">
+              <SelectValue placeholder="Select instruction set" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Z80">Z80</SelectItem>
+              <SelectItem value="8080">Intel 8080</SelectItem>
+              <SelectItem value="8085">Intel 8085</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         
         <div className="space-y-2">

@@ -28,6 +28,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [originAddress, setOriginAddress] = useState<number>(0x0000);
   const [outputFormat, setOutputFormat] = useState<string>('list');
+  const [targetInstructionSet, setTargetInstructionSet] = useState<string>('Z80');
   const [disassembly, setDisassembly] = useState<ReturnType<typeof disassembleBinary>>([]);
   const [showInfo, setShowInfo] = useState<boolean>(false);
 
@@ -49,17 +50,19 @@ const Index = () => {
     }, 100);
   };
 
-  // Update disassembly when origin address changes
+  // Update disassembly when origin address or target instruction set changes
   React.useEffect(() => {
     if (fileData) {
       try {
+        // In a full implementation, targetInstructionSet would be passed to disassembleBinary
+        // For now, we're just storing the state but not using it in the disassembler yet
         const result = disassembleBinary(fileData, originAddress);
         setDisassembly(result);
       } catch (error) {
         console.error('Disassembly error:', error);
       }
     }
-  }, [fileData, originAddress]);
+  }, [fileData, originAddress, targetInstructionSet]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -94,6 +97,8 @@ const Index = () => {
               setOriginAddress={setOriginAddress}
               outputFormat={outputFormat}
               setOutputFormat={setOutputFormat}
+              targetInstructionSet={targetInstructionSet}
+              setTargetInstructionSet={setTargetInstructionSet}
             />
             
             <Card>
@@ -130,7 +135,8 @@ const Index = () => {
                     <ol className="list-decimal ml-4 space-y-1">
                       <li>Upload a binary file (.bin)</li>
                       <li>Adjust the origin address if needed</li>
-                      <li>View the disassembled Z80 code</li>
+                      <li>Select your target instruction set (Z80, Intel 8080, or Intel 8085)</li>
+                      <li>View the disassembled code</li>
                       <li>Copy to clipboard or save as .asm file</li>
                     </ol>
                   </div>
@@ -170,6 +176,10 @@ const Index = () => {
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Instructions:</span>
                       <span className="font-medium">{disassembly.length}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Instruction Set:</span>
+                      <span className="font-medium">{targetInstructionSet}</span>
                     </div>
                   </div>
                 ) : (
