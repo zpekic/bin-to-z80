@@ -14,6 +14,16 @@ export const ARITHMETIC_OPCODES: Record<number, OpcodeHandler> = {
   0x86: () => ({ mnemonic: 'ADD', operands: 'A, (HL)', bytes: [0x86], size: 1 }),
   0x87: () => ({ mnemonic: 'ADD', operands: 'A, A', bytes: [0x87], size: 1 }),
   
+  // ADC A, r operations (adding with carry)
+  0x88: () => ({ mnemonic: 'ADC', operands: 'A, B', bytes: [0x88], size: 1, comment: 'Add with carry' }),
+  0x89: () => ({ mnemonic: 'ADC', operands: 'A, C', bytes: [0x89], size: 1, comment: 'Add with carry' }),
+  0x8A: () => ({ mnemonic: 'ADC', operands: 'A, D', bytes: [0x8A], size: 1, comment: 'Add with carry' }),
+  0x8B: () => ({ mnemonic: 'ADC', operands: 'A, E', bytes: [0x8B], size: 1, comment: 'Add with carry' }),
+  0x8C: () => ({ mnemonic: 'ADC', operands: 'A, H', bytes: [0x8C], size: 1, comment: 'Add with carry' }),
+  0x8D: () => ({ mnemonic: 'ADC', operands: 'A, L', bytes: [0x8D], size: 1, comment: 'Add with carry' }),
+  0x8E: () => ({ mnemonic: 'ADC', operands: 'A, (HL)', bytes: [0x8E], size: 1, comment: 'Add with carry' }),
+  0x8F: () => ({ mnemonic: 'ADC', operands: 'A, A', bytes: [0x8F], size: 1, comment: 'Add with carry' }),
+  
   // SUB r operations
   0x90: () => ({ mnemonic: 'SUB', operands: 'B', bytes: [0x90], size: 1 }),
   0x91: () => ({ mnemonic: 'SUB', operands: 'C', bytes: [0x91], size: 1 }),
@@ -24,6 +34,16 @@ export const ARITHMETIC_OPCODES: Record<number, OpcodeHandler> = {
   0x96: () => ({ mnemonic: 'SUB', operands: '(HL)', bytes: [0x96], size: 1 }),
   0x97: () => ({ mnemonic: 'SUB', operands: 'A', bytes: [0x97], size: 1 }),
   
+  // SBC A, r operations (subtract with carry)
+  0x98: () => ({ mnemonic: 'SBC', operands: 'A, B', bytes: [0x98], size: 1, comment: 'Subtract with carry' }),
+  0x99: () => ({ mnemonic: 'SBC', operands: 'A, C', bytes: [0x99], size: 1, comment: 'Subtract with carry' }),
+  0x9A: () => ({ mnemonic: 'SBC', operands: 'A, D', bytes: [0x9A], size: 1, comment: 'Subtract with carry' }),
+  0x9B: () => ({ mnemonic: 'SBC', operands: 'A, E', bytes: [0x9B], size: 1, comment: 'Subtract with carry' }),
+  0x9C: () => ({ mnemonic: 'SBC', operands: 'A, H', bytes: [0x9C], size: 1, comment: 'Subtract with carry' }),
+  0x9D: () => ({ mnemonic: 'SBC', operands: 'A, L', bytes: [0x9D], size: 1, comment: 'Subtract with carry' }),
+  0x9E: () => ({ mnemonic: 'SBC', operands: 'A, (HL)', bytes: [0x9E], size: 1, comment: 'Subtract with carry' }),
+  0x9F: () => ({ mnemonic: 'SBC', operands: 'A, A', bytes: [0x9F], size: 1, comment: 'Subtract with carry' }),
+  
   // AND r operations
   0xA0: () => ({ mnemonic: 'AND', operands: 'B', bytes: [0xA0], size: 1 }),
   0xA1: () => ({ mnemonic: 'AND', operands: 'C', bytes: [0xA1], size: 1 }),
@@ -33,6 +53,16 @@ export const ARITHMETIC_OPCODES: Record<number, OpcodeHandler> = {
   0xA5: () => ({ mnemonic: 'AND', operands: 'L', bytes: [0xA5], size: 1 }),
   0xA6: () => ({ mnemonic: 'AND', operands: '(HL)', bytes: [0xA6], size: 1 }),
   0xA7: () => ({ mnemonic: 'AND', operands: 'A', bytes: [0xA7], size: 1 }),
+  
+  // XOR r operations
+  0xA8: () => ({ mnemonic: 'XOR', operands: 'B', bytes: [0xA8], size: 1, comment: 'Exclusive OR' }),
+  0xA9: () => ({ mnemonic: 'XOR', operands: 'C', bytes: [0xA9], size: 1, comment: 'Exclusive OR' }),
+  0xAA: () => ({ mnemonic: 'XOR', operands: 'D', bytes: [0xAA], size: 1, comment: 'Exclusive OR' }),
+  0xAB: () => ({ mnemonic: 'XOR', operands: 'E', bytes: [0xAB], size: 1, comment: 'Exclusive OR' }),
+  0xAC: () => ({ mnemonic: 'XOR', operands: 'H', bytes: [0xAC], size: 1, comment: 'Exclusive OR' }),
+  0xAD: () => ({ mnemonic: 'XOR', operands: 'L', bytes: [0xAD], size: 1, comment: 'Exclusive OR' }),
+  0xAE: () => ({ mnemonic: 'XOR', operands: '(HL)', bytes: [0xAE], size: 1, comment: 'Exclusive OR' }),
+  0xAF: () => ({ mnemonic: 'XOR', operands: 'A', bytes: [0xAF], size: 1, comment: 'Exclusive OR' }),
   
   // OR r operations
   0xB0: () => ({ mnemonic: 'OR', operands: 'B', bytes: [0xB0], size: 1 }),
@@ -60,5 +90,59 @@ export const ARITHMETIC_OPCODES: Record<number, OpcodeHandler> = {
     operands: `A, ${formatByteValue(bytes[i+1])}`,
     bytes: [0xC6, bytes[i+1]],
     size: 2
+  }),
+  
+  // Add the missing immediate arithmetic operations
+  0xCE: (bytes, i) => ({
+    mnemonic: 'ADC',
+    operands: `A, ${formatByteValue(bytes[i+1])}`,
+    bytes: [0xCE, bytes[i+1]],
+    size: 2,
+    comment: 'Add immediate with carry'
+  }),
+  
+  0xD6: (bytes, i) => ({
+    mnemonic: 'SUB',
+    operands: formatByteValue(bytes[i+1]),
+    bytes: [0xD6, bytes[i+1]],
+    size: 2
+  }),
+  
+  0xDE: (bytes, i) => ({
+    mnemonic: 'SBC',
+    operands: `A, ${formatByteValue(bytes[i+1])}`,
+    bytes: [0xDE, bytes[i+1]],
+    size: 2,
+    comment: 'Subtract immediate with carry'
+  }),
+  
+  0xE6: (bytes, i) => ({
+    mnemonic: 'AND',
+    operands: formatByteValue(bytes[i+1]),
+    bytes: [0xE6, bytes[i+1]],
+    size: 2
+  }),
+  
+  0xEE: (bytes, i) => ({
+    mnemonic: 'XOR',
+    operands: formatByteValue(bytes[i+1]),
+    bytes: [0xEE, bytes[i+1]],
+    size: 2,
+    comment: 'Exclusive OR with immediate'
+  }),
+  
+  0xF6: (bytes, i) => ({
+    mnemonic: 'OR',
+    operands: formatByteValue(bytes[i+1]),
+    bytes: [0xF6, bytes[i+1]],
+    size: 2
+  }),
+  
+  0xFE: (bytes, i) => ({
+    mnemonic: 'CP',
+    operands: formatByteValue(bytes[i+1]),
+    bytes: [0xFE, bytes[i+1]],
+    size: 2,
+    comment: 'Compare A with immediate'
   }),
 };
