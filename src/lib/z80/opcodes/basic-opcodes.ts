@@ -97,8 +97,7 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       operands: `NZ, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
       bytes: [0x20, offset],
       size: 2,
-      targetAddress,
-      comment: `ASCII: '${String.fromCharCode(0x20)}' (Space)`
+      targetAddress
     };
   },
   0x21: (bytes, i) => {
@@ -107,8 +106,7 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `HL, ${format16BitHex(value)}`,
       bytes: [0x21, bytes[i+1], bytes[i+2]],
-      size: 3,
-      comment: `ASCII: '${String.fromCharCode(0x21)}' (!)`
+      size: 3
     };
   },
   0x22: (bytes, i) => {
@@ -117,8 +115,7 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `(${format16BitHex(value)}), HL`,
       bytes: [0x22, bytes[i+1], bytes[i+2]],
-      size: 3,
-      comment: `ASCII: '${String.fromCharCode(0x22)}' (")`
+      size: 3
     };
   },
   0x23: () => ({ 
@@ -146,8 +143,7 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
     mnemonic: 'LD',
     operands: `H, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x26, bytes[i+1]],
-    size: 2,
-    comment: `ASCII: '${String.fromCharCode(0x26)}' (&)`
+    size: 2
   }),
   0x28: (bytes, i) => {
     const offset = bytes[i+1];
@@ -157,8 +153,7 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       operands: `Z, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
       bytes: [0x28, offset],
       size: 2,
-      targetAddress,
-      comment: `ASCII: '${String.fromCharCode(0x28)}' ((`
+      targetAddress
     };
   },
   0x29: () => ({ 
@@ -174,8 +169,7 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `HL, (${format16BitHex(value)})`,
       bytes: [0x2A, bytes[i+1], bytes[i+2]],
-      size: 3,
-      comment: `ASCII: '${String.fromCharCode(0x2A)}' (*)`
+      size: 3
     };
   },
   0x2B: () => ({ 
@@ -203,8 +197,7 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
     mnemonic: 'LD',
     operands: `L, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x2E, bytes[i+1]],
-    size: 2,
-    comment: `ASCII: '${String.fromCharCode(0x2E)}' (.)`
+    size: 2
   }),
 
   // More conditional jumps and loads
@@ -216,8 +209,7 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       operands: `NC, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
       bytes: [0x30, offset],
       size: 2,
-      targetAddress,
-      comment: `ASCII: '${String.fromCharCode(0x30)}' (0)`
+      targetAddress
     };
   },
   0x31: (bytes, i) => {
@@ -226,8 +218,7 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `SP, ${format16BitHex(value)}`,
       bytes: [0x31, bytes[i+1], bytes[i+2]],
-      size: 3,
-      comment: `ASCII: '${String.fromCharCode(0x31)}' (1)`
+      size: 3
     };
   },
   0x32: (bytes, i) => {
@@ -236,8 +227,7 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `(${format16BitHex(value)}), A`,
       bytes: [0x32, bytes[i+1], bytes[i+2]],
-      size: 3,
-      comment: `ASCII: '${String.fromCharCode(0x32)}' (2)`
+      size: 3
     };
   },
   0x33: () => ({ 
@@ -265,8 +255,7 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
     mnemonic: 'LD',
     operands: `(HL), ${formatByteValue(bytes[i+1])}`,
     bytes: [0x36, bytes[i+1]],
-    size: 2,
-    comment: `ASCII: '${String.fromCharCode(0x36)}' (6)`
+    size: 2
   }),
   0x37: () => ({ 
     mnemonic: 'SCF', 
@@ -283,8 +272,7 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       operands: `C, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
       bytes: [0x38, offset],
       size: 2,
-      targetAddress,
-      comment: `ASCII: '${String.fromCharCode(0x38)}' (8)`
+      targetAddress
     };
   },
   0x39: () => ({ 
@@ -300,8 +288,7 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `A, (${format16BitHex(value)})`,
       bytes: [0x3A, bytes[i+1], bytes[i+2]],
-      size: 3,
-      comment: `ASCII: '${String.fromCharCode(0x3A)}' (:)`
+      size: 3
     };
   },
   0x3B: () => ({ 
@@ -329,8 +316,7 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
     mnemonic: 'LD',
     operands: `A, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x3E, bytes[i+1]],
-    size: 2,
-    comment: `ASCII: '${String.fromCharCode(0x3E)}' (>)`
+    size: 2
   }),
   0x3F: () => ({ 
     mnemonic: 'CCF', 

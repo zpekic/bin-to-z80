@@ -40,7 +40,7 @@ export const REGISTER_OPCODES: Record<number, OpcodeHandler> = {
   0x5E: () => ({ mnemonic: 'LD', operands: 'E, (HL)', bytes: [0x5E], size: 1 }),
   0x5F: () => ({ mnemonic: 'LD', operands: 'E, A', bytes: [0x5F], size: 1 }),
   
-  // Add ASCII comments for opcodes in the range 0x60 to 0x7E
+  // Add ASCII comments for single-byte opcodes in the range 0x60 to 0x7E
   0x60: () => ({ 
     mnemonic: 'LD', 
     operands: 'H, B', 
