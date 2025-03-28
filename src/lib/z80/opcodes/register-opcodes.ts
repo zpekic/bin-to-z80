@@ -40,39 +40,226 @@ export const REGISTER_OPCODES: Record<number, OpcodeHandler> = {
   0x5E: () => ({ mnemonic: 'LD', operands: 'E, (HL)', bytes: [0x5E], size: 1 }),
   0x5F: () => ({ mnemonic: 'LD', operands: 'E, A', bytes: [0x5F], size: 1 }),
   
-  0x60: () => ({ mnemonic: 'LD', operands: 'H, B', bytes: [0x60], size: 1 }),
-  0x61: () => ({ mnemonic: 'LD', operands: 'H, C', bytes: [0x61], size: 1 }),
-  0x62: () => ({ mnemonic: 'LD', operands: 'H, D', bytes: [0x62], size: 1 }),
-  0x63: () => ({ mnemonic: 'LD', operands: 'H, E', bytes: [0x63], size: 1 }),
-  0x64: () => ({ mnemonic: 'LD', operands: 'H, H', bytes: [0x64], size: 1 }),
-  0x65: () => ({ mnemonic: 'LD', operands: 'H, L', bytes: [0x65], size: 1 }),
-  0x66: () => ({ mnemonic: 'LD', operands: 'H, (HL)', bytes: [0x66], size: 1 }),
-  0x67: () => ({ mnemonic: 'LD', operands: 'H, A', bytes: [0x67], size: 1 }),
+  // Add ASCII comments for opcodes in the range 0x60 to 0x7E
+  0x60: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'H, B', 
+    bytes: [0x60], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x60)}' (\`)`
+  }),
+  0x61: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'H, C', 
+    bytes: [0x61], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x61)}' (a)`
+  }),
+  0x62: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'H, D', 
+    bytes: [0x62], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x62)}' (b)`
+  }),
+  0x63: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'H, E', 
+    bytes: [0x63], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x63)}' (c)`
+  }),
+  0x64: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'H, H', 
+    bytes: [0x64], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x64)}' (d)`
+  }),
+  0x65: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'H, L', 
+    bytes: [0x65], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x65)}' (e)`
+  }),
+  0x66: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'H, (HL)', 
+    bytes: [0x66], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x66)}' (f)`
+  }),
+  0x67: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'H, A', 
+    bytes: [0x67], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x67)}' (g)`
+  }),
   
-  0x68: () => ({ mnemonic: 'LD', operands: 'L, B', bytes: [0x68], size: 1 }),
-  0x69: () => ({ mnemonic: 'LD', operands: 'L, C', bytes: [0x69], size: 1 }),
-  0x6A: () => ({ mnemonic: 'LD', operands: 'L, D', bytes: [0x6A], size: 1 }),
-  0x6B: () => ({ mnemonic: 'LD', operands: 'L, E', bytes: [0x6B], size: 1 }),
-  0x6C: () => ({ mnemonic: 'LD', operands: 'L, H', bytes: [0x6C], size: 1 }),
-  0x6D: () => ({ mnemonic: 'LD', operands: 'L, L', bytes: [0x6D], size: 1 }),
-  0x6E: () => ({ mnemonic: 'LD', operands: 'L, (HL)', bytes: [0x6E], size: 1 }),
-  0x6F: () => ({ mnemonic: 'LD', operands: 'L, A', bytes: [0x6F], size: 1 }),
+  0x68: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'L, B', 
+    bytes: [0x68], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x68)}' (h)`
+  }),
+  0x69: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'L, C', 
+    bytes: [0x69], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x69)}' (i)`
+  }),
+  0x6A: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'L, D', 
+    bytes: [0x6A], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x6A)}' (j)`
+  }),
+  0x6B: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'L, E', 
+    bytes: [0x6B], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x6B)}' (k)`
+  }),
+  0x6C: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'L, H', 
+    bytes: [0x6C], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x6C)}' (l)`
+  }),
+  0x6D: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'L, L', 
+    bytes: [0x6D], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x6D)}' (m)`
+  }),
+  0x6E: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'L, (HL)', 
+    bytes: [0x6E], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x6E)}' (n)`
+  }),
+  0x6F: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'L, A', 
+    bytes: [0x6F], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x6F)}' (o)`
+  }),
   
-  0x70: () => ({ mnemonic: 'LD', operands: '(HL), B', bytes: [0x70], size: 1 }),
-  0x71: () => ({ mnemonic: 'LD', operands: '(HL), C', bytes: [0x71], size: 1 }),
-  0x72: () => ({ mnemonic: 'LD', operands: '(HL), D', bytes: [0x72], size: 1 }),
-  0x73: () => ({ mnemonic: 'LD', operands: '(HL), E', bytes: [0x73], size: 1 }),
-  0x74: () => ({ mnemonic: 'LD', operands: '(HL), H', bytes: [0x74], size: 1 }),
-  0x75: () => ({ mnemonic: 'LD', operands: '(HL), L', bytes: [0x75], size: 1 }),
-  0x76: () => ({ mnemonic: 'HALT', operands: '', bytes: [0x76], size: 1 }),
-  0x77: () => ({ mnemonic: 'LD', operands: '(HL), A', bytes: [0x77], size: 1 }),
+  0x70: () => ({ 
+    mnemonic: 'LD', 
+    operands: '(HL), B', 
+    bytes: [0x70], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x70)}' (p)`
+  }),
+  0x71: () => ({ 
+    mnemonic: 'LD', 
+    operands: '(HL), C', 
+    bytes: [0x71], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x71)}' (q)`
+  }),
+  0x72: () => ({ 
+    mnemonic: 'LD', 
+    operands: '(HL), D', 
+    bytes: [0x72], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x72)}' (r)`
+  }),
+  0x73: () => ({ 
+    mnemonic: 'LD', 
+    operands: '(HL), E', 
+    bytes: [0x73], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x73)}' (s)`
+  }),
+  0x74: () => ({ 
+    mnemonic: 'LD', 
+    operands: '(HL), H', 
+    bytes: [0x74], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x74)}' (t)`
+  }),
+  0x75: () => ({ 
+    mnemonic: 'LD', 
+    operands: '(HL), L', 
+    bytes: [0x75], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x75)}' (u)`
+  }),
+  0x76: () => ({ 
+    mnemonic: 'HALT', 
+    operands: '', 
+    bytes: [0x76], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x76)}' (v)`
+  }),
+  0x77: () => ({ 
+    mnemonic: 'LD', 
+    operands: '(HL), A', 
+    bytes: [0x77], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x77)}' (w)`
+  }),
   
-  0x78: () => ({ mnemonic: 'LD', operands: 'A, B', bytes: [0x78], size: 1 }),
-  0x79: () => ({ mnemonic: 'LD', operands: 'A, C', bytes: [0x79], size: 1 }),
-  0x7A: () => ({ mnemonic: 'LD', operands: 'A, D', bytes: [0x7A], size: 1 }),
-  0x7B: () => ({ mnemonic: 'LD', operands: 'A, E', bytes: [0x7B], size: 1 }),
-  0x7C: () => ({ mnemonic: 'LD', operands: 'A, H', bytes: [0x7C], size: 1 }),
-  0x7D: () => ({ mnemonic: 'LD', operands: 'A, L', bytes: [0x7D], size: 1 }),
-  0x7E: () => ({ mnemonic: 'LD', operands: 'A, (HL)', bytes: [0x7E], size: 1 }),
+  0x78: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'A, B', 
+    bytes: [0x78], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x78)}' (x)`
+  }),
+  0x79: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'A, C', 
+    bytes: [0x79], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x79)}' (y)`
+  }),
+  0x7A: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'A, D', 
+    bytes: [0x7A], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x7A)}' (z)`
+  }),
+  0x7B: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'A, E', 
+    bytes: [0x7B], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x7B)}' ({)`
+  }),
+  0x7C: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'A, H', 
+    bytes: [0x7C], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x7C)}' (|)`
+  }),
+  0x7D: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'A, L', 
+    bytes: [0x7D], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x7D)}' (})`
+  }),
+  0x7E: () => ({ 
+    mnemonic: 'LD', 
+    operands: 'A, (HL)', 
+    bytes: [0x7E], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x7E)}' (~)`
+  }),
   0x7F: () => ({ mnemonic: 'LD', operands: 'A, A', bytes: [0x7F], size: 1 }),
 };

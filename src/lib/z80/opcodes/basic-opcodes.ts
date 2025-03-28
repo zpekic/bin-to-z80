@@ -97,7 +97,8 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       operands: `NZ, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
       bytes: [0x20, offset],
       size: 2,
-      targetAddress
+      targetAddress,
+      comment: `ASCII: '${String.fromCharCode(0x20)}' (Space)`
     };
   },
   0x21: (bytes, i) => {
@@ -106,7 +107,8 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `HL, ${format16BitHex(value)}`,
       bytes: [0x21, bytes[i+1], bytes[i+2]],
-      size: 3
+      size: 3,
+      comment: `ASCII: '${String.fromCharCode(0x21)}' (!)`
     };
   },
   0x22: (bytes, i) => {
@@ -115,17 +117,37 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `(${format16BitHex(value)}), HL`,
       bytes: [0x22, bytes[i+1], bytes[i+2]],
-      size: 3
+      size: 3,
+      comment: `ASCII: '${String.fromCharCode(0x22)}' (")`
     };
   },
-  0x23: () => ({ mnemonic: 'INC', operands: 'HL', bytes: [0x23], size: 1 }),
-  0x24: () => ({ mnemonic: 'INC', operands: 'H', bytes: [0x24], size: 1 }),
-  0x25: () => ({ mnemonic: 'DEC', operands: 'H', bytes: [0x25], size: 1 }),
+  0x23: () => ({ 
+    mnemonic: 'INC', 
+    operands: 'HL', 
+    bytes: [0x23], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x23)}' (#)`
+  }),
+  0x24: () => ({ 
+    mnemonic: 'INC', 
+    operands: 'H', 
+    bytes: [0x24], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x24)}' ($)`
+  }),
+  0x25: () => ({ 
+    mnemonic: 'DEC', 
+    operands: 'H', 
+    bytes: [0x25], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x25)}' (%)`
+  }),
   0x26: (bytes, i) => ({
     mnemonic: 'LD',
     operands: `H, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x26, bytes[i+1]],
-    size: 2
+    size: 2,
+    comment: `ASCII: '${String.fromCharCode(0x26)}' (&)`
   }),
   0x28: (bytes, i) => {
     const offset = bytes[i+1];
@@ -135,27 +157,54 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       operands: `Z, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
       bytes: [0x28, offset],
       size: 2,
-      targetAddress
+      targetAddress,
+      comment: `ASCII: '${String.fromCharCode(0x28)}' ((`
     };
   },
-  0x29: () => ({ mnemonic: 'ADD', operands: 'HL, HL', bytes: [0x29], size: 1 }),
+  0x29: () => ({ 
+    mnemonic: 'ADD', 
+    operands: 'HL, HL', 
+    bytes: [0x29], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x29)}' ())`
+  }),
   0x2A: (bytes, i) => {
     const value = bytes[i+1] + (bytes[i+2] << 8);
     return {
       mnemonic: 'LD',
       operands: `HL, (${format16BitHex(value)})`,
       bytes: [0x2A, bytes[i+1], bytes[i+2]],
-      size: 3
+      size: 3,
+      comment: `ASCII: '${String.fromCharCode(0x2A)}' (*)`
     };
   },
-  0x2B: () => ({ mnemonic: 'DEC', operands: 'HL', bytes: [0x2B], size: 1 }),
-  0x2C: () => ({ mnemonic: 'INC', operands: 'L', bytes: [0x2C], size: 1 }),
-  0x2D: () => ({ mnemonic: 'DEC', operands: 'L', bytes: [0x2D], size: 1 }),
+  0x2B: () => ({ 
+    mnemonic: 'DEC', 
+    operands: 'HL', 
+    bytes: [0x2B], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x2B)}' (+)`
+  }),
+  0x2C: () => ({ 
+    mnemonic: 'INC', 
+    operands: 'L', 
+    bytes: [0x2C], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x2C)}' (,)`
+  }),
+  0x2D: () => ({ 
+    mnemonic: 'DEC', 
+    operands: 'L', 
+    bytes: [0x2D], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x2D)}' (-)`
+  }),
   0x2E: (bytes, i) => ({
     mnemonic: 'LD',
     operands: `L, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x2E, bytes[i+1]],
-    size: 2
+    size: 2,
+    comment: `ASCII: '${String.fromCharCode(0x2E)}' (.)`
   }),
 
   // More conditional jumps and loads
@@ -167,7 +216,8 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       operands: `NC, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
       bytes: [0x30, offset],
       size: 2,
-      targetAddress
+      targetAddress,
+      comment: `ASCII: '${String.fromCharCode(0x30)}' (0)`
     };
   },
   0x31: (bytes, i) => {
@@ -176,7 +226,8 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `SP, ${format16BitHex(value)}`,
       bytes: [0x31, bytes[i+1], bytes[i+2]],
-      size: 3
+      size: 3,
+      comment: `ASCII: '${String.fromCharCode(0x31)}' (1)`
     };
   },
   0x32: (bytes, i) => {
@@ -185,19 +236,45 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `(${format16BitHex(value)}), A`,
       bytes: [0x32, bytes[i+1], bytes[i+2]],
-      size: 3
+      size: 3,
+      comment: `ASCII: '${String.fromCharCode(0x32)}' (2)`
     };
   },
-  0x33: () => ({ mnemonic: 'INC', operands: 'SP', bytes: [0x33], size: 1 }),
-  0x34: () => ({ mnemonic: 'INC', operands: '(HL)', bytes: [0x34], size: 1 }),
-  0x35: () => ({ mnemonic: 'DEC', operands: '(HL)', bytes: [0x35], size: 1 }),
+  0x33: () => ({ 
+    mnemonic: 'INC', 
+    operands: 'SP', 
+    bytes: [0x33], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x33)}' (3)`
+  }),
+  0x34: () => ({ 
+    mnemonic: 'INC', 
+    operands: '(HL)', 
+    bytes: [0x34], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x34)}' (4)`
+  }),
+  0x35: () => ({ 
+    mnemonic: 'DEC', 
+    operands: '(HL)', 
+    bytes: [0x35], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x35)}' (5)`
+  }),
   0x36: (bytes, i) => ({
     mnemonic: 'LD',
     operands: `(HL), ${formatByteValue(bytes[i+1])}`,
     bytes: [0x36, bytes[i+1]],
-    size: 2
+    size: 2,
+    comment: `ASCII: '${String.fromCharCode(0x36)}' (6)`
   }),
-  0x37: () => ({ mnemonic: 'SCF', operands: '', bytes: [0x37], size: 1 }),
+  0x37: () => ({ 
+    mnemonic: 'SCF', 
+    operands: '', 
+    bytes: [0x37], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x37)}' (7)`
+  }),
   0x38: (bytes, i) => {
     const offset = bytes[i+1];
     const targetAddress = (i + 2 + ((offset & 0x80) ? (offset - 256) : offset)) & 0xFFFF;
@@ -206,27 +283,60 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       operands: `C, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
       bytes: [0x38, offset],
       size: 2,
-      targetAddress
+      targetAddress,
+      comment: `ASCII: '${String.fromCharCode(0x38)}' (8)`
     };
   },
-  0x39: () => ({ mnemonic: 'ADD', operands: 'HL, SP', bytes: [0x39], size: 1 }),
+  0x39: () => ({ 
+    mnemonic: 'ADD', 
+    operands: 'HL, SP', 
+    bytes: [0x39], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x39)}' (9)`
+  }),
   0x3A: (bytes, i) => {
     const value = bytes[i+1] + (bytes[i+2] << 8);
     return {
       mnemonic: 'LD',
       operands: `A, (${format16BitHex(value)})`,
       bytes: [0x3A, bytes[i+1], bytes[i+2]],
-      size: 3
+      size: 3,
+      comment: `ASCII: '${String.fromCharCode(0x3A)}' (:)`
     };
   },
-  0x3B: () => ({ mnemonic: 'DEC', operands: 'SP', bytes: [0x3B], size: 1 }),
-  0x3C: () => ({ mnemonic: 'INC', operands: 'A', bytes: [0x3C], size: 1 }),
-  0x3D: () => ({ mnemonic: 'DEC', operands: 'A', bytes: [0x3D], size: 1 }),
+  0x3B: () => ({ 
+    mnemonic: 'DEC', 
+    operands: 'SP', 
+    bytes: [0x3B], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x3B)}' (;)`
+  }),
+  0x3C: () => ({ 
+    mnemonic: 'INC', 
+    operands: 'A', 
+    bytes: [0x3C], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x3C)}' (<)`
+  }),
+  0x3D: () => ({ 
+    mnemonic: 'DEC', 
+    operands: 'A', 
+    bytes: [0x3D], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x3D)}' (=)`
+  }),
   0x3E: (bytes, i) => ({
     mnemonic: 'LD',
     operands: `A, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x3E, bytes[i+1]],
-    size: 2
+    size: 2,
+    comment: `ASCII: '${String.fromCharCode(0x3E)}' (>)`
   }),
-  0x3F: () => ({ mnemonic: 'CCF', operands: '', bytes: [0x3F], size: 1 }),
+  0x3F: () => ({ 
+    mnemonic: 'CCF', 
+    operands: '', 
+    bytes: [0x3F], 
+    size: 1,
+    comment: `ASCII: '${String.fromCharCode(0x3F)}' (?)`
+  }),
 };
