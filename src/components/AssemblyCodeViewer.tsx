@@ -2,9 +2,11 @@
 import React, { useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Copy, Download, Share2 } from 'lucide-react';
+import { Copy, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatHex } from '@/lib/z80-disassembler';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import HexViewer from '@/components/HexViewer';
 
 interface AssemblyCodeViewerProps {
   disassembly: {
@@ -20,12 +22,14 @@ interface AssemblyCodeViewerProps {
   }[];
   fileName: string;
   outputFormat?: string;
+  fileData: Uint8Array;
 }
 
 const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({ 
   disassembly, 
   fileName, 
-  outputFormat = 'list' 
+  outputFormat = 'list',
+  fileData 
 }) => {
   const codeRef = useRef<HTMLPreElement>(null);
 
@@ -194,13 +198,26 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
         </div>
       </div>
 
-      <Card className="w-full overflow-hidden border">
-        <div className="overflow-x-auto code-block">
-          <pre ref={codeRef} className="text-sm">
-            {renderDisassembly()}
-          </pre>
-        </div>
-      </Card>
+      <Tabs defaultValue="disassembly" className="w-full">
+        <TabsList className="mb-2">
+          <TabsTrigger value="disassembly">Disassembly</TabsTrigger>
+          <TabsTrigger value="hex">Hex View</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="disassembly">
+          <Card className="w-full overflow-hidden border">
+            <div className="overflow-x-auto code-block">
+              <pre ref={codeRef} className="text-sm">
+                {renderDisassembly()}
+              </pre>
+            </div>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="hex">
+          <HexViewer data={fileData} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

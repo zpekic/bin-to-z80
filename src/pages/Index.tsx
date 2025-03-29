@@ -84,6 +84,7 @@ const Index = () => {
                   disassembly={disassembly} 
                   fileName={fileName} 
                   outputFormat={outputFormat}
+                  fileData={fileData!}
                 />
               </div>
             )}
