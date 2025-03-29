@@ -75,14 +75,23 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileLoaded, isLoading }) => {
 
   return (
     <Card
-      className={`w-full p-8 border-2 border-dashed transition-all ${
+      className={`w-full p-8 border-2 border-dashed transition-all bg-no-repeat bg-cover bg-center bg-blend-overlay 
+      bg-secondary/80 backdrop-blur-sm overflow-hidden relative ${
         isLoading ? 'opacity-50 pointer-events-none' : ''
       }`}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
+      style={{
+        backgroundImage: "url('https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
     >
-      <div className="flex flex-col items-center justify-center gap-4 text-center">
-        <div className="rounded-full bg-primary/10 p-4">
+      {/* Dark overlay for better text visibility */}
+      <div className="absolute inset-0 bg-background/70 dark:bg-background/80 backdrop-blur-sm"></div>
+      
+      <div className="flex flex-col items-center justify-center gap-4 text-center relative z-10">
+        <div className="rounded-full bg-primary/10 p-4 backdrop-blur-md">
           <Upload className="h-8 w-8 text-primary animate-pulse-soft" />
         </div>
         
