@@ -29,14 +29,7 @@ export const disassembleBinary = (
     const opcode = binary[index];
     const handler = Z80_OPCODES[opcode];
     
-    // Skip unsupported opcodes for the target instruction set
-    const isZ80Only = Z80_ONLY_OPCODES.includes(opcode);
-    const is8085Specific = INTEL_8085_SPECIFIC_OPCODES.includes(opcode);
-    const isUnsupportedOpcode = 
-      (targetInstructionSet === 'Intel 8080' && (isZ80Only || is8085Specific)) ||
-      (targetInstructionSet === 'Intel 8085' && isZ80Only);
-    
-    if (handler && !isUnsupportedOpcode) {
+    if (handler) {
       const instruction = handler(binary, index);
       // Store the absolute address
       instruction.address = origin + index;
@@ -45,15 +38,19 @@ export const disassembleBinary = (
         instruction.targetAddress = origin + instruction.targetAddress;
       }
       
+      // Check if opcode is supported by the target instruction set
+      const isSupported8080 = instruction.supportsIntel8080;
+      const isSupported8085 = instruction.supportsIntel8085;
+      
       // Add warning for Z80-only opcodes when targeting Intel processors
-      if (isZ80Only && (targetInstructionSet === 'Intel 8080' || targetInstructionSet === 'Intel 8085')) {
+      if (!isSupported8080 && (targetInstructionSet === 'Intel 8080' || targetInstructionSet === 'Intel 8085')) {
         instruction.comment = instruction.comment 
           ? `${instruction.comment} - WARNING: Z80 ONLY` 
           : 'WARNING: Z80 ONLY';
       }
       
       // Add warning for 8085-specific opcodes when targeting non-8085 processors
-      if (is8085Specific && targetInstructionSet !== 'Intel 8085') {
+      if (isSupported8085 && !isSupported8080 && targetInstructionSet !== 'Intel 8085') {
         instruction.comment = instruction.comment 
           ? `${instruction.comment} - WARNING: 8085 ONLY` 
           : 'WARNING: 8085 ONLY';
@@ -85,9 +82,7 @@ export const disassembleBinary = (
     } else {
       // Unknown or unsupported opcode, treat as data byte
       const dbMnemonic = targetInstructionSet === 'Z80' ? 'DB' : 'DB';
-      const comment = isUnsupportedOpcode 
-        ? `Unsupported opcode in ${targetInstructionSet}` 
-        : 'Unknown opcode';
+      const comment = 'Unknown opcode';
       
       result.push({
         address: origin + index,
@@ -97,7 +92,9 @@ export const disassembleBinary = (
           bytes: [opcode],
           size: 1,
           comment,
-          address: origin + index
+          address: origin + index,
+          supportsIntel8080: false,
+          supportsIntel8085: false
         }
       });
       index += 1;

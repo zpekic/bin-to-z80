@@ -11,7 +11,9 @@ export const IO_OPCODES: Record<number, OpcodeHandler> = {
     bytes: [0xD3, bytes[i+1]],
     size: 2,
     isIOOperation: true,
-    comment: 'Output to port'
+    comment: 'Output to port',
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   
   // IN operations
@@ -21,6 +23,8 @@ export const IO_OPCODES: Record<number, OpcodeHandler> = {
     bytes: [0xDB, bytes[i+1]],
     size: 2,
     isIOOperation: true,
-    comment: 'Input from port'
+    comment: 'Input from port',
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
 };

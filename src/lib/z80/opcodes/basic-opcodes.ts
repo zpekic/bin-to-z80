@@ -5,7 +5,7 @@ import { formatByteValue, format16BitHex } from '../formatters';
 // Basic Z80 opcodes (0x00-0x3F)
 export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
   // No operation
-  0x00: () => ({ mnemonic: 'NOP', operands: '', bytes: [0x00], size: 1 }),
+  0x00: () => ({ mnemonic: 'NOP', operands: '', bytes: [0x00], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
   
   // 16-bit load immediate
   0x01: (bytes, i) => {
@@ -14,34 +14,40 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `BC, ${format16BitHex(value)}`,
       bytes: [0x01, bytes[i+1], bytes[i+2]],
-      size: 3
+      size: 3,
+      supportsIntel8080: true,
+      supportsIntel8085: true
     };
   },
   
   // 8-bit register operations
-  0x02: () => ({ mnemonic: 'LD', operands: '(BC), A', bytes: [0x02], size: 1 }),
-  0x03: () => ({ mnemonic: 'INC', operands: 'BC', bytes: [0x03], size: 1 }),
-  0x04: () => ({ mnemonic: 'INC', operands: 'B', bytes: [0x04], size: 1 }),
-  0x05: () => ({ mnemonic: 'DEC', operands: 'B', bytes: [0x05], size: 1 }),
+  0x02: () => ({ mnemonic: 'LD', operands: '(BC), A', bytes: [0x02], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
+  0x03: () => ({ mnemonic: 'INC', operands: 'BC', bytes: [0x03], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
+  0x04: () => ({ mnemonic: 'INC', operands: 'B', bytes: [0x04], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
+  0x05: () => ({ mnemonic: 'DEC', operands: 'B', bytes: [0x05], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
   0x06: (bytes, i) => ({
     mnemonic: 'LD',
     operands: `B, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x06, bytes[i+1]],
-    size: 2
+    size: 2,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
-  0x07: () => ({ mnemonic: 'RLCA', operands: '', bytes: [0x07], size: 1 }),
-  0x08: () => ({ mnemonic: 'EX', operands: 'AF, AF\'', bytes: [0x08], size: 1 }),
-  0x09: () => ({ mnemonic: 'ADD', operands: 'HL, BC', bytes: [0x09], size: 1 }),
-  0x0A: () => ({ mnemonic: 'LD', operands: 'A, (BC)', bytes: [0x0A], size: 1 }),
-  0x0C: () => ({ mnemonic: 'INC', operands: 'C', bytes: [0x0C], size: 1 }),
-  0x0D: () => ({ mnemonic: 'DEC', operands: 'C', bytes: [0x0D], size: 1 }),
+  0x07: () => ({ mnemonic: 'RLCA', operands: '', bytes: [0x07], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
+  0x08: () => ({ mnemonic: 'EX', operands: 'AF, AF\'', bytes: [0x08], size: 1, supportsIntel8080: false, supportsIntel8085: false }),
+  0x09: () => ({ mnemonic: 'ADD', operands: 'HL, BC', bytes: [0x09], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
+  0x0A: () => ({ mnemonic: 'LD', operands: 'A, (BC)', bytes: [0x0A], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
+  0x0C: () => ({ mnemonic: 'INC', operands: 'C', bytes: [0x0C], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
+  0x0D: () => ({ mnemonic: 'DEC', operands: 'C', bytes: [0x0D], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
   0x0E: (bytes, i) => ({
     mnemonic: 'LD',
     operands: `C, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x0E, bytes[i+1]],
-    size: 2
+    size: 2,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
-  0x0F: () => ({ mnemonic: 'RRCA', operands: '', bytes: [0x0F], size: 1 }),
+  0x0F: () => ({ mnemonic: 'RRCA', operands: '', bytes: [0x0F], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
   
   // More 16-bit operations
   0x11: (bytes, i) => {
@@ -50,20 +56,24 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `DE, ${format16BitHex(value)}`,
       bytes: [0x11, bytes[i+1], bytes[i+2]],
-      size: 3
+      size: 3,
+      supportsIntel8080: true,
+      supportsIntel8085: true
     };
   },
-  0x12: () => ({ mnemonic: 'LD', operands: '(DE), A', bytes: [0x12], size: 1 }),
-  0x13: () => ({ mnemonic: 'INC', operands: 'DE', bytes: [0x13], size: 1 }),
-  0x14: () => ({ mnemonic: 'INC', operands: 'D', bytes: [0x14], size: 1 }),
-  0x15: () => ({ mnemonic: 'DEC', operands: 'D', bytes: [0x15], size: 1 }),
+  0x12: () => ({ mnemonic: 'LD', operands: '(DE), A', bytes: [0x12], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
+  0x13: () => ({ mnemonic: 'INC', operands: 'DE', bytes: [0x13], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
+  0x14: () => ({ mnemonic: 'INC', operands: 'D', bytes: [0x14], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
+  0x15: () => ({ mnemonic: 'DEC', operands: 'D', bytes: [0x15], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
   0x16: (bytes, i) => ({
     mnemonic: 'LD',
     operands: `D, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x16, bytes[i+1]],
-    size: 2
+    size: 2,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
-  0x17: () => ({ mnemonic: 'RLA', operands: '', bytes: [0x17], size: 1 }),
+  0x17: () => ({ mnemonic: 'RLA', operands: '', bytes: [0x17], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
   0x18: (bytes, i) => {
     const offset = bytes[i+1];
     const targetAddress = (i + 2 + ((offset & 0x80) ? (offset - 256) : offset)) & 0xFFFF;
@@ -72,21 +82,25 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       operands: `${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
       bytes: [0x18, offset],
       size: 2,
-      targetAddress
+      targetAddress,
+      supportsIntel8080: false,
+      supportsIntel8085: false
     };
   },
-  0x19: () => ({ mnemonic: 'ADD', operands: 'HL, DE', bytes: [0x19], size: 1 }),
-  0x1A: () => ({ mnemonic: 'LD', operands: 'A, (DE)', bytes: [0x1A], size: 1 }),
-  0x1B: () => ({ mnemonic: 'DEC', operands: 'DE', bytes: [0x1B], size: 1 }),
-  0x1C: () => ({ mnemonic: 'INC', operands: 'E', bytes: [0x1C], size: 1 }),
-  0x1D: () => ({ mnemonic: 'DEC', operands: 'E', bytes: [0x1D], size: 1 }),
+  0x19: () => ({ mnemonic: 'ADD', operands: 'HL, DE', bytes: [0x19], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
+  0x1A: () => ({ mnemonic: 'LD', operands: 'A, (DE)', bytes: [0x1A], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
+  0x1B: () => ({ mnemonic: 'DEC', operands: 'DE', bytes: [0x1B], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
+  0x1C: () => ({ mnemonic: 'INC', operands: 'E', bytes: [0x1C], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
+  0x1D: () => ({ mnemonic: 'DEC', operands: 'E', bytes: [0x1D], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
   0x1E: (bytes, i) => ({
     mnemonic: 'LD',
     operands: `E, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x1E, bytes[i+1]],
-    size: 2
+    size: 2,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
-  0x1F: () => ({ mnemonic: 'RRA', operands: '', bytes: [0x1F], size: 1 }),
+  0x1F: () => ({ mnemonic: 'RRA', operands: '', bytes: [0x1F], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
   
   // Conditional jumps and loads
   0x20: (bytes, i) => {
@@ -97,7 +111,9 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       operands: `NZ, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
       bytes: [0x20, offset],
       size: 2,
-      targetAddress
+      targetAddress,
+      supportsIntel8080: false, 
+      supportsIntel8085: true // RIM in 8085 (Read Interrupt Mask)
     };
   },
   0x21: (bytes, i) => {
@@ -106,7 +122,9 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `HL, ${format16BitHex(value)}`,
       bytes: [0x21, bytes[i+1], bytes[i+2]],
-      size: 3
+      size: 3,
+      supportsIntel8080: true,
+      supportsIntel8085: true
     };
   },
   0x22: (bytes, i) => {
@@ -115,7 +133,9 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `(${format16BitHex(value)}), HL`,
       bytes: [0x22, bytes[i+1], bytes[i+2]],
-      size: 3
+      size: 3,
+      supportsIntel8080: true,
+      supportsIntel8085: true
     };
   },
   0x23: () => ({ 
@@ -123,27 +143,35 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
     operands: 'HL', 
     bytes: [0x23], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x23)}' (#)`
+    comment: `ASCII: '${String.fromCharCode(0x23)}' (#)`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x24: () => ({ 
     mnemonic: 'INC', 
     operands: 'H', 
     bytes: [0x24], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x24)}' ($)`
+    comment: `ASCII: '${String.fromCharCode(0x24)}' ($)`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x25: () => ({ 
     mnemonic: 'DEC', 
     operands: 'H', 
     bytes: [0x25], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x25)}' (%)`
+    comment: `ASCII: '${String.fromCharCode(0x25)}' (%)`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x26: (bytes, i) => ({
     mnemonic: 'LD',
     operands: `H, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x26, bytes[i+1]],
-    size: 2
+    size: 2,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x28: (bytes, i) => {
     const offset = bytes[i+1];
@@ -153,7 +181,9 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       operands: `Z, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
       bytes: [0x28, offset],
       size: 2,
-      targetAddress
+      targetAddress,
+      supportsIntel8080: false,
+      supportsIntel8085: false
     };
   },
   0x29: () => ({ 
@@ -161,7 +191,9 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
     operands: 'HL, HL', 
     bytes: [0x29], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x29)}' ())`
+    comment: `ASCII: '${String.fromCharCode(0x29)}' ())`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x2A: (bytes, i) => {
     const value = bytes[i+1] + (bytes[i+2] << 8);
@@ -169,7 +201,9 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `HL, (${format16BitHex(value)})`,
       bytes: [0x2A, bytes[i+1], bytes[i+2]],
-      size: 3
+      size: 3,
+      supportsIntel8080: true,
+      supportsIntel8085: true
     };
   },
   0x2B: () => ({ 
@@ -177,27 +211,35 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
     operands: 'HL', 
     bytes: [0x2B], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x2B)}' (+)`
+    comment: `ASCII: '${String.fromCharCode(0x2B)}' (+)`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x2C: () => ({ 
     mnemonic: 'INC', 
     operands: 'L', 
     bytes: [0x2C], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x2C)}' (,)`
+    comment: `ASCII: '${String.fromCharCode(0x2C)}' (,)`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x2D: () => ({ 
     mnemonic: 'DEC', 
     operands: 'L', 
     bytes: [0x2D], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x2D)}' (-)`
+    comment: `ASCII: '${String.fromCharCode(0x2D)}' (-)`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x2E: (bytes, i) => ({
     mnemonic: 'LD',
     operands: `L, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x2E, bytes[i+1]],
-    size: 2
+    size: 2,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
 
   // More conditional jumps and loads
@@ -209,7 +251,9 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       operands: `NC, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
       bytes: [0x30, offset],
       size: 2,
-      targetAddress
+      targetAddress,
+      supportsIntel8080: false,
+      supportsIntel8085: true // SIM in 8085 (Set Interrupt Mask)
     };
   },
   0x31: (bytes, i) => {
@@ -218,7 +262,9 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `SP, ${format16BitHex(value)}`,
       bytes: [0x31, bytes[i+1], bytes[i+2]],
-      size: 3
+      size: 3,
+      supportsIntel8080: true,
+      supportsIntel8085: true
     };
   },
   0x32: (bytes, i) => {
@@ -227,7 +273,9 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `(${format16BitHex(value)}), A`,
       bytes: [0x32, bytes[i+1], bytes[i+2]],
-      size: 3
+      size: 3,
+      supportsIntel8080: true,
+      supportsIntel8085: true
     };
   },
   0x33: () => ({ 
@@ -235,34 +283,44 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
     operands: 'SP', 
     bytes: [0x33], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x33)}' (3)`
+    comment: `ASCII: '${String.fromCharCode(0x33)}' (3)`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x34: () => ({ 
     mnemonic: 'INC', 
     operands: '(HL)', 
     bytes: [0x34], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x34)}' (4)`
+    comment: `ASCII: '${String.fromCharCode(0x34)}' (4)`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x35: () => ({ 
     mnemonic: 'DEC', 
     operands: '(HL)', 
     bytes: [0x35], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x35)}' (5)`
+    comment: `ASCII: '${String.fromCharCode(0x35)}' (5)`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x36: (bytes, i) => ({
     mnemonic: 'LD',
     operands: `(HL), ${formatByteValue(bytes[i+1])}`,
     bytes: [0x36, bytes[i+1]],
-    size: 2
+    size: 2,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x37: () => ({ 
     mnemonic: 'SCF', 
     operands: '', 
     bytes: [0x37], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x37)}' (7)`
+    comment: `ASCII: '${String.fromCharCode(0x37)}' (7)`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x38: (bytes, i) => {
     const offset = bytes[i+1];
@@ -272,7 +330,9 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       operands: `C, ${(offset & 0x80) ? '-' : '+'}${offset & 0x7F}`,
       bytes: [0x38, offset],
       size: 2,
-      targetAddress
+      targetAddress,
+      supportsIntel8080: false,
+      supportsIntel8085: false
     };
   },
   0x39: () => ({ 
@@ -280,7 +340,9 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
     operands: 'HL, SP', 
     bytes: [0x39], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x39)}' (9)`
+    comment: `ASCII: '${String.fromCharCode(0x39)}' (9)`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x3A: (bytes, i) => {
     const value = bytes[i+1] + (bytes[i+2] << 8);
@@ -288,7 +350,9 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
       mnemonic: 'LD',
       operands: `A, (${format16BitHex(value)})`,
       bytes: [0x3A, bytes[i+1], bytes[i+2]],
-      size: 3
+      size: 3,
+      supportsIntel8080: true,
+      supportsIntel8085: true
     };
   },
   0x3B: () => ({ 
@@ -296,33 +360,43 @@ export const BASIC_OPCODES: Record<number, OpcodeHandler> = {
     operands: 'SP', 
     bytes: [0x3B], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x3B)}' (;)`
+    comment: `ASCII: '${String.fromCharCode(0x3B)}' (;)`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x3C: () => ({ 
     mnemonic: 'INC', 
     operands: 'A', 
     bytes: [0x3C], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x3C)}' (<)`
+    comment: `ASCII: '${String.fromCharCode(0x3C)}' (<)`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x3D: () => ({ 
     mnemonic: 'DEC', 
     operands: 'A', 
     bytes: [0x3D], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x3D)}' (=)`
+    comment: `ASCII: '${String.fromCharCode(0x3D)}' (=)`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x3E: (bytes, i) => ({
     mnemonic: 'LD',
     operands: `A, ${formatByteValue(bytes[i+1])}`,
     bytes: [0x3E, bytes[i+1]],
-    size: 2
+    size: 2,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
   0x3F: () => ({ 
     mnemonic: 'CCF', 
     operands: '', 
     bytes: [0x3F], 
     size: 1,
-    comment: `ASCII: '${String.fromCharCode(0x3F)}' (?)`
+    comment: `ASCII: '${String.fromCharCode(0x3F)}' (?)`,
+    supportsIntel8080: true,
+    supportsIntel8085: true
   }),
 };

@@ -10,6 +10,8 @@ export type Z80Instruction = {
   targetAddress?: number;
   isIOOperation?: boolean;
   mnemonicIntel?: string; // Added field to store Intel-specific mnemonic
+  supportsIntel8080?: boolean; // Whether this opcode is supported on Intel 8080
+  supportsIntel8085?: boolean; // Whether this opcode is supported on Intel 8085
 };
 
 export type OpcodeHandler = (bytes: Uint8Array, index: number) => Z80Instruction;
