@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -40,7 +39,7 @@ const Index = () => {
     // Use setTimeout to ensure the UI doesn't freeze
     setTimeout(() => {
       try {
-        const result = disassembleBinary(data, originAddress);
+        const result = disassembleBinary(data, originAddress, targetInstructionSet);
         setDisassembly(result);
       } catch (error) {
         console.error('Disassembly error:', error);
@@ -54,9 +53,8 @@ const Index = () => {
   React.useEffect(() => {
     if (fileData) {
       try {
-        // In a full implementation, targetInstructionSet would be passed to disassembleBinary
-        // For now, we're just storing the state but not using it in the disassembler yet
-        const result = disassembleBinary(fileData, originAddress);
+        // Pass the targetInstructionSet to disassembleBinary
+        const result = disassembleBinary(fileData, originAddress, targetInstructionSet);
         setDisassembly(result);
       } catch (error) {
         console.error('Disassembly error:', error);

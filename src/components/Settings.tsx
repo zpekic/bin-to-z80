@@ -81,8 +81,8 @@ const Settings: React.FC<SettingsProps> = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Z80">Z80</SelectItem>
-              <SelectItem value="8080">Intel 8080</SelectItem>
-              <SelectItem value="8085">Intel 8085</SelectItem>
+              <SelectItem value="Intel 8080">Intel 8080</SelectItem>
+              <SelectItem value="Intel 8085">Intel 8085</SelectItem>
             </SelectContent>
           </Select>
         </div>

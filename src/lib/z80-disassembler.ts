@@ -10,9 +10,14 @@ import {
   isAddressInRange 
 } from './z80/label-utils';
 import { Z80_OPCODES } from './z80/opcodes';
+import { translateToIntel, adjustOperandsForIntel } from './z80/mnemonic-translators';
 
 // Disassemble a binary file
-export const disassembleBinary = (binary: Uint8Array, origin = 0): {
+export const disassembleBinary = (
+  binary: Uint8Array, 
+  origin = 0, 
+  targetInstructionSet = 'Z80'
+): {
   address: number;
   instruction: Z80Instruction;
 }[] => {
@@ -33,6 +38,21 @@ export const disassembleBinary = (binary: Uint8Array, origin = 0): {
         instruction.targetAddress = origin + instruction.targetAddress;
       }
       
+      // Apply Intel mnemonics if not using Z80
+      if (targetInstructionSet === 'Intel 8080' || targetInstructionSet === 'Intel 8085') {
+        const originalMnemonic = instruction.mnemonic;
+        instruction.mnemonic = translateToIntel(instruction.mnemonic);
+        instruction.operands = adjustOperandsForIntel(instruction.mnemonic, instruction.operands);
+        
+        // Add comment about original Z80 mnemonic if it was translated
+        if (originalMnemonic !== instruction.mnemonic) {
+          const originalInstruction = `${originalMnemonic} ${instruction.operands}`.trim();
+          instruction.comment = instruction.comment 
+            ? `${instruction.comment} (Z80: ${originalInstruction})` 
+            : `Z80: ${originalInstruction}`;
+        }
+      }
+      
       result.push({
         address: origin + index,
         instruction
@@ -43,7 +63,7 @@ export const disassembleBinary = (binary: Uint8Array, origin = 0): {
       result.push({
         address: origin + index,
         instruction: {
-          mnemonic: 'DB',
+          mnemonic: targetInstructionSet === 'Z80' ? 'DB' : 'DB',
           operands: `${formatHex(opcode, 2)}h`,
           bytes: [opcode],
           size: 1,
