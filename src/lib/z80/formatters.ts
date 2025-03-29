@@ -1,3 +1,4 @@
+
 // Format a number as hexadecimal with padding
 export const formatHex = (num: number, pad: number): string => {
   return num.toString(16).toUpperCase().padStart(pad, '0');
@@ -6,6 +7,11 @@ export const formatHex = (num: number, pad: number): string => {
 // Format a 16-bit value to hexadecimal
 export const format16BitHex = (value: number): string => {
   return `${formatHex(value, 4)}h`;
+};
+
+// Format a byte as binary string
+export const formatBinary = (value: number): string => {
+  return value.toString(2).padStart(8, '0');
 };
 
 // Helper function to convert printable ASCII bytes to character representation

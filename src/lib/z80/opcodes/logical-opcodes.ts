@@ -2,6 +2,11 @@
 import { OpcodeHandler } from '../types';
 import { formatByteValue } from '../formatters';
 
+// Format a byte as binary string
+const formatBinary = (value: number): string => {
+  return value.toString(2).padStart(8, '0');
+};
+
 // Logical operations (AND, OR, XOR)
 export const LOGICAL_OPCODES: Record<number, OpcodeHandler> = {
   // AND r operations
@@ -35,27 +40,36 @@ export const LOGICAL_OPCODES: Record<number, OpcodeHandler> = {
   0xB7: () => ({ mnemonic: 'OR', operands: 'A', bytes: [0xB7], size: 1, comment: 'Logical OR with A' }),
 
   // Immediate logical operations
-  0xE6: (bytes, i) => ({
-    mnemonic: 'AND',
-    operands: formatByteValue(bytes[i+1]),
-    bytes: [0xE6, bytes[i+1]],
-    size: 2,
-    comment: 'Logical AND with immediate value'
-  }),
+  0xE6: (bytes, i) => {
+    const value = bytes[i+1];
+    return {
+      mnemonic: 'AND',
+      operands: `${formatByteValue(value)} (${formatBinary(value)}b)`,
+      bytes: [0xE6, value],
+      size: 2,
+      comment: 'Logical AND with immediate value'
+    };
+  },
   
-  0xEE: (bytes, i) => ({
-    mnemonic: 'XOR',
-    operands: formatByteValue(bytes[i+1]),
-    bytes: [0xEE, bytes[i+1]],
-    size: 2,
-    comment: 'Exclusive OR with immediate value'
-  }),
+  0xEE: (bytes, i) => {
+    const value = bytes[i+1];
+    return {
+      mnemonic: 'XOR',
+      operands: `${formatByteValue(value)} (${formatBinary(value)}b)`,
+      bytes: [0xEE, value],
+      size: 2,
+      comment: 'Exclusive OR with immediate value'
+    };
+  },
   
-  0xF6: (bytes, i) => ({
-    mnemonic: 'OR',
-    operands: formatByteValue(bytes[i+1]),
-    bytes: [0xF6, bytes[i+1]],
-    size: 2,
-    comment: 'Logical OR with immediate value'
-  }),
+  0xF6: (bytes, i) => {
+    const value = bytes[i+1];
+    return {
+      mnemonic: 'OR',
+      operands: `${formatByteValue(value)} (${formatBinary(value)}b)`,
+      bytes: [0xF6, value],
+      size: 2,
+      comment: 'Logical OR with immediate value'
+    };
+  },
 };
