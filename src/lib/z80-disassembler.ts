@@ -52,6 +52,13 @@ export const disassembleBinary = (
           : 'WARNING: Z80 ONLY';
       }
       
+      // Add warning for 8085-specific opcodes when targeting non-8085 processors
+      if (is8085Specific && targetInstructionSet !== 'Intel 8085') {
+        instruction.comment = instruction.comment 
+          ? `${instruction.comment} - WARNING: 8085 ONLY` 
+          : 'WARNING: 8085 ONLY';
+      }
+      
       // Apply Intel mnemonics if not using Z80
       if (targetInstructionSet === 'Intel 8080' || targetInstructionSet === 'Intel 8085') {
         const originalMnemonic = instruction.mnemonic;
