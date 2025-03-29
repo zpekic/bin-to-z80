@@ -45,6 +45,13 @@ export const disassembleBinary = (
         instruction.targetAddress = origin + instruction.targetAddress;
       }
       
+      // Add warning for Z80-only opcodes when targeting Intel processors
+      if (isZ80Only && (targetInstructionSet === 'Intel 8080' || targetInstructionSet === 'Intel 8085')) {
+        instruction.comment = instruction.comment 
+          ? `${instruction.comment} - WARNING: Z80 ONLY` 
+          : 'WARNING: Z80 ONLY';
+      }
+      
       // Apply Intel mnemonics if not using Z80
       if (targetInstructionSet === 'Intel 8080' || targetInstructionSet === 'Intel 8085') {
         const originalMnemonic = instruction.mnemonic;
