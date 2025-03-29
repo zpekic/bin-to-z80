@@ -9,7 +9,7 @@ import {
   createLabelMap, 
   isAddressInRange 
 } from './z80/label-utils';
-import { Z80_OPCODES } from './z80/opcodes';
+import { Z80_OPCODES, Z80_ONLY_OPCODES, INTEL_8085_SPECIFIC_OPCODES } from './z80/opcodes';
 import { translateToIntel, adjustOperandsForIntel } from './z80/mnemonic-translators';
 
 // Disassemble a binary file
@@ -29,7 +29,14 @@ export const disassembleBinary = (
     const opcode = binary[index];
     const handler = Z80_OPCODES[opcode];
     
-    if (handler) {
+    // Skip unsupported opcodes for the target instruction set
+    const isZ80Only = Z80_ONLY_OPCODES.includes(opcode);
+    const is8085Specific = INTEL_8085_SPECIFIC_OPCODES.includes(opcode);
+    const isUnsupportedOpcode = 
+      (targetInstructionSet === 'Intel 8080' && (isZ80Only || is8085Specific)) ||
+      (targetInstructionSet === 'Intel 8085' && isZ80Only);
+    
+    if (handler && !isUnsupportedOpcode) {
       const instruction = handler(binary, index);
       // Store the absolute address
       instruction.address = origin + index;
@@ -59,15 +66,20 @@ export const disassembleBinary = (
       });
       index += instruction.size;
     } else {
-      // Unknown opcode, treat as data byte
+      // Unknown or unsupported opcode, treat as data byte
+      const dbMnemonic = targetInstructionSet === 'Z80' ? 'DB' : 'DB';
+      const comment = isUnsupportedOpcode 
+        ? `Unsupported opcode in ${targetInstructionSet}` 
+        : 'Unknown opcode';
+      
       result.push({
         address: origin + index,
         instruction: {
-          mnemonic: targetInstructionSet === 'Z80' ? 'DB' : 'DB',
+          mnemonic: dbMnemonic,
           operands: `${formatHex(opcode, 2)}h`,
           bytes: [opcode],
           size: 1,
-          comment: 'Unknown opcode',
+          comment,
           address: origin + index
         }
       });

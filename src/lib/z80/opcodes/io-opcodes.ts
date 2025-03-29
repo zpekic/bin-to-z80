@@ -10,7 +10,8 @@ export const IO_OPCODES: Record<number, OpcodeHandler> = {
     operands: `(${formatByteValue(bytes[i+1]).replace("'", "").replace("'", "")}), A`,
     bytes: [0xD3, bytes[i+1]],
     size: 2,
-    isIOOperation: true
+    isIOOperation: true,
+    comment: 'Output to port'
   }),
   
   // IN operations
@@ -19,6 +20,7 @@ export const IO_OPCODES: Record<number, OpcodeHandler> = {
     operands: `A, (${formatByteValue(bytes[i+1]).replace("'", "").replace("'", "")})`,
     bytes: [0xDB, bytes[i+1]],
     size: 2,
-    isIOOperation: true
+    isIOOperation: true,
+    comment: 'Input from port'
   }),
 };

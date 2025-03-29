@@ -37,3 +37,10 @@ export const Z80_ONLY_OPCODES = [
   // IY register instructions
   0xFD
 ];
+
+// 8085-specific opcodes not in Z80 or 8080
+export const INTEL_8085_SPECIFIC_OPCODES = [
+  0x20, // RIM - Read Interrupt Mask (8085 only)
+  0x30, // SIM - Set Interrupt Mask (8085 only)
+  // 8085 has additional opcodes for DSUB, ARHL, RDEL, etc.
+];

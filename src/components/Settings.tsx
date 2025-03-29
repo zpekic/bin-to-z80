@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -29,6 +29,11 @@ const Settings: React.FC<SettingsProps> = ({
   setTargetInstructionSet = () => {}
 }) => {
   const [addressInput, setAddressInput] = useState(originAddress.toString(16).toUpperCase());
+  
+  // Update address input when originAddress changes externally
+  useEffect(() => {
+    setAddressInput(originAddress.toString(16).toUpperCase());
+  }, [originAddress]);
   
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9A-Fa-f]/g, '');
@@ -73,7 +78,7 @@ const Settings: React.FC<SettingsProps> = ({
         <div className="space-y-2">
           <Label htmlFor="targetInstructionSet">Target Instruction Set</Label>
           <Select 
-            defaultValue={targetInstructionSet} 
+            value={targetInstructionSet}
             onValueChange={handleInstructionSetChange}
           >
             <SelectTrigger id="targetInstructionSet">
@@ -85,12 +90,19 @@ const Settings: React.FC<SettingsProps> = ({
               <SelectItem value="Intel 8085">Intel 8085</SelectItem>
             </SelectContent>
           </Select>
+          <p className="text-xs text-muted-foreground mt-1">
+            {targetInstructionSet === 'Z80' 
+              ? 'Full Z80 instruction set' 
+              : targetInstructionSet === 'Intel 8080' 
+                ? 'Intel 8080 compatibility mode' 
+                : 'Intel 8085 extended instructions'}
+          </p>
         </div>
         
         <div className="space-y-2">
           <Label htmlFor="outputFormat">Output Format</Label>
           <Select 
-            defaultValue={outputFormat} 
+            value={outputFormat}
             onValueChange={handleFormatChange}
           >
             <SelectTrigger id="outputFormat">
