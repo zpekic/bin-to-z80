@@ -1,4 +1,3 @@
-
 import React, { useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,13 +22,15 @@ interface AssemblyCodeViewerProps {
   fileName: string;
   outputFormat?: string;
   fileData: Uint8Array;
+  originAddress?: number;
 }
 
 const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({ 
   disassembly, 
   fileName, 
   outputFormat = 'list',
-  fileData 
+  fileData,
+  originAddress = 0
 }) => {
   const codeRef = useRef<HTMLPreElement>(null);
 
@@ -215,7 +216,11 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
         </TabsContent>
         
         <TabsContent value="hex">
-          <HexViewer data={fileData} />
+          <HexViewer 
+            data={fileData} 
+            originAddress={originAddress}
+            fileName={fileName}
+          />
         </TabsContent>
       </Tabs>
     </div>

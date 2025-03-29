@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -85,6 +86,7 @@ const Index = () => {
                   fileName={fileName} 
                   outputFormat={outputFormat}
                   fileData={fileData!}
+                  originAddress={originAddress}
                 />
               </div>
             )}
