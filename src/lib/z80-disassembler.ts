@@ -45,15 +45,15 @@ export const disassembleBinary = (
       // Add warning for Z80-only opcodes when targeting Intel processors
       if (!isSupported8080 && (targetInstructionSet === 'Intel 8080' || targetInstructionSet === 'Intel 8085')) {
         instruction.comment = instruction.comment 
-          ? `${instruction.comment} - WARNING: Z80 ONLY` 
-          : 'WARNING: Z80 ONLY';
+          ? `${instruction.comment} - WARNING: Z80 ONLY - NOT SUPPORTED` 
+          : 'WARNING: Z80 ONLY - NOT SUPPORTED';
       }
       
       // Add warning for 8085-specific opcodes when targeting non-8085 processors
-      if (isSupported8085 && !isSupported8080 && targetInstructionSet !== 'Intel 8085') {
+      if (isSupported8085 && !isSupported8080 && targetInstructionSet === 'Intel 8080') {
         instruction.comment = instruction.comment 
-          ? `${instruction.comment} - WARNING: 8085 ONLY` 
-          : 'WARNING: 8085 ONLY';
+          ? `${instruction.comment} - WARNING: 8085 ONLY - NOT SUPPORTED IN 8080` 
+          : 'WARNING: 8085 ONLY - NOT SUPPORTED IN 8080';
       }
       
       // Apply Intel mnemonics if not using Z80
@@ -82,7 +82,7 @@ export const disassembleBinary = (
     } else {
       // Unknown or unsupported opcode, treat as data byte
       const dbMnemonic = targetInstructionSet === 'Z80' ? 'DB' : 'DB';
-      const comment = 'Unknown opcode';
+      const comment = 'Unknown opcode - NOT SUPPORTED';
       
       result.push({
         address: origin + index,
