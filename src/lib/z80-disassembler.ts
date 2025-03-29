@@ -61,8 +61,11 @@ export const disassembleBinary = (
       
       // Apply Intel mnemonics if not using Z80
       if (targetInstructionSet === 'Intel 8080' || targetInstructionSet === 'Intel 8085') {
+        // Store the original Z80 mnemonic before translating
+        instruction.mnemonicIntel = translateToIntel(instruction.mnemonic);
+        
         const originalMnemonic = instruction.mnemonic;
-        instruction.mnemonic = translateToIntel(instruction.mnemonic);
+        instruction.mnemonic = instruction.mnemonicIntel;
         instruction.operands = adjustOperandsForIntel(instruction.mnemonic, instruction.operands);
         
         // Add comment about original Z80 mnemonic if it was translated
