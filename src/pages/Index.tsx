@@ -6,7 +6,7 @@ import FileUpload from '@/components/FileUpload';
 import AssemblyCodeViewer from '@/components/AssemblyCodeViewer';
 import Settings from '@/components/Settings';
 import { disassembleBinary } from '@/lib/z80-disassembler';
-import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, HelpCircle, ExternalLink } from 'lucide-react';
 import { 
   Card, 
   CardContent, 
@@ -131,6 +131,19 @@ const Index = () => {
                     The disassembler uses a simplified instruction set for demonstration purposes.
                     A production version would support the complete Z80 instruction set.
                   </p>
+                  
+                  <p className="flex items-center gap-2">
+                    <ExternalLink className="h-4 w-4 flex-shrink-0" />
+                    <a 
+                      href="https://hackaday.io/page/399365-writing-a-z80-disassembler-using-ai" 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      Writing a Z80 Disassembler Using AI
+                    </a>
+                  </p>
+                  
                   <div className="pt-2">
                     <h4 className="font-medium mb-2">How to use:</h4>
                     <ol className="list-decimal ml-4 space-y-1">
