@@ -74,57 +74,47 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileLoaded, isLoading }) => {
   }, []);
 
   return (
-    <div className="relative w-full h-full">
-      <div 
-        className="absolute inset-0 bg-cover bg-center" 
-        style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80')",
-          opacity: 0.15,
-          zIndex: 0
-        }}
-      />
-      <Card
-        className={`w-full p-8 border-2 border-dashed transition-all bg-secondary/80 backdrop-blur-sm overflow-hidden relative ${
-          isLoading ? 'opacity-50 pointer-events-none' : ''
-        }`}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-      >
-        <div className="relative z-10 flex flex-col items-center justify-center gap-4 text-center">
-          <div className="rounded-full bg-primary/10 p-4 backdrop-blur-md">
-            <Upload className="h-8 w-8 text-primary animate-pulse-soft" />
-          </div>
-          
-          <div className="space-y-2">
-            <h3 className="text-xl font-semibold">Upload Binary File</h3>
-            <p className="text-sm text-muted-foreground max-w-md">
-              Drag and drop your .bin file here, or click to browse files
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3 items-center">
-            <Button className="gap-2" disabled={isLoading} asChild>
-              <label className="cursor-pointer">
-                <FileUp className="h-4 w-4" />
-                Browse Files
-                <input
-                  type="file"
-                  className="sr-only"
-                  accept=".bin"
-                  onChange={handleFileChange}
-                  disabled={isLoading}
-                />
-              </label>
-            </Button>
-            
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
-              <AlertCircle className="h-3 w-3" />
-              Only .bin files up to 10MB are supported
-            </p>
-          </div>
+    <Card
+      className={`w-full p-8 border-2 border-dashed transition-all bg-secondary/80 backdrop-blur-sm overflow-hidden relative ${
+        isLoading ? 'opacity-50 pointer-events-none' : ''
+      }`}
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+    >
+      <div className="relative z-10 flex flex-col items-center justify-center gap-4 text-center">
+        <div className="rounded-full bg-primary/10 p-4 backdrop-blur-md">
+          <Upload className="h-8 w-8 text-primary animate-pulse-soft" />
         </div>
-      </Card>
-    </div>
+        
+        <div className="space-y-2">
+          <h3 className="text-xl font-semibold">Upload Binary File</h3>
+          <p className="text-sm text-muted-foreground max-w-md">
+            Drag and drop your .bin file here, or click to browse files
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 items-center">
+          <Button className="gap-2" disabled={isLoading} asChild>
+            <label className="cursor-pointer">
+              <FileUp className="h-4 w-4" />
+              Browse Files
+              <input
+                type="file"
+                className="sr-only"
+                accept=".bin"
+                onChange={handleFileChange}
+                disabled={isLoading}
+              />
+            </label>
+          </Button>
+          
+          <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <AlertCircle className="h-3 w-3" />
+            Only .bin files up to 10MB are supported
+          </p>
+        </div>
+      </div>
+    </Card>
   );
 };
 
