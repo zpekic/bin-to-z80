@@ -6,7 +6,7 @@ import {
   createLabelMap, 
   isAddressInRange 
 } from '../label-utils';
-import { Z80_OPCODES } from '../opcodes';
+import { Z80_OPCODES, INTEL_8080_OPCODES } from '../opcodes';
 import { processInstruction } from './instruction-processor';
 
 /**
@@ -28,10 +28,15 @@ export const disassembleBinary = (
   const result: { address: number; instruction: Z80Instruction }[] = [];
   let index = 0;
 
+  // Select the appropriate opcode set based on the target instruction set
+  const opcodes = targetInstructionSet === 'Intel 8080' 
+    ? INTEL_8080_OPCODES 
+    : Z80_OPCODES;
+
   // First pass - basic disassembly
   while (index < binary.length) {
     const opcode = binary[index];
-    const handler = Z80_OPCODES[opcode];
+    const handler = opcodes[opcode];
     
     if (handler) {
       // Get the basic instruction from the opcode handler
