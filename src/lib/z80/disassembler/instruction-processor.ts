@@ -1,6 +1,5 @@
 
 import { Z80Instruction } from '../types';
-import { translateToIntel, adjustOperandsForIntel } from '../mnemonic-translators';
 
 /**
  * Process an instruction to:
@@ -47,24 +46,6 @@ export const processInstruction = (
     processedInstruction.comment = processedInstruction.comment 
       ? `${processedInstruction.comment} - WARNING: 8085 ONLY - NOT SUPPORTED IN 8080` 
       : 'WARNING: 8085 ONLY - NOT SUPPORTED IN 8080';
-  }
-  
-  // Apply Intel mnemonics if not using Z80
-  if (targetInstructionSet === 'Intel 8080' || targetInstructionSet === 'Intel 8085') {
-    // Store the original Z80 mnemonic before translating
-    processedInstruction.mnemonicIntel = translateToIntel(processedInstruction.mnemonic);
-    
-    const originalMnemonic = processedInstruction.mnemonic;
-    processedInstruction.mnemonic = processedInstruction.mnemonicIntel;
-    processedInstruction.operands = adjustOperandsForIntel(processedInstruction.mnemonic, processedInstruction.operands);
-    
-    // Add comment about original Z80 mnemonic if it was translated
-    if (originalMnemonic !== processedInstruction.mnemonic) {
-      const originalInstruction = `${originalMnemonic} ${processedInstruction.operands}`.trim();
-      processedInstruction.comment = processedInstruction.comment 
-        ? `${processedInstruction.comment} (Z80: ${originalInstruction})` 
-        : `Z80: ${originalInstruction}`;
-    }
   }
   
   return processedInstruction;
