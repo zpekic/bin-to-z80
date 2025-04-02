@@ -24,6 +24,11 @@ export const formatByteValue = (byteValue: number): string => {
   return `${formatHex(byteValue, 2)}h`;
 };
 
+// Helper function to format a word value (16-bit) for display
+export const formatWordValue = (value: number): string => {
+  return `${formatHex(value, 4)}h`;
+};
+
 // Convert binary data to array of bytes
 export const bytesToHexString = (bytes: number[]): string => {
   return bytes.map(byte => formatHex(byte, 2)).join(' ');
