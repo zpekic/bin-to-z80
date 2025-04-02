@@ -7,6 +7,7 @@ import { LOGICAL_OPCODES } from './logical-opcodes';
 import { CONTROL_FLOW_OPCODES } from './control-flow-opcodes';
 import { IO_OPCODES } from './io-opcodes';
 import { INTEL_8080_OPCODES } from './intel8080-opcodes';
+import { INTEL_8085_OPCODES } from './intel8085-opcodes';
 
 // Combine all opcode handlers into a single lookup table
 export const Z80_OPCODES: Record<number, OpcodeHandler> = {
@@ -18,8 +19,8 @@ export const Z80_OPCODES: Record<number, OpcodeHandler> = {
   ...IO_OPCODES,
 };
 
-// Export Intel 8080 opcodes separately
-export { INTEL_8080_OPCODES };
+// Export Intel 8080 and 8085 opcodes separately
+export { INTEL_8080_OPCODES, INTEL_8085_OPCODES };
 
 // Define opcodes that aren't supported in Intel 8080/8085
 // This can be used for filtering or specialized handling
