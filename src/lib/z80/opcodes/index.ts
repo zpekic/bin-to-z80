@@ -25,19 +25,39 @@ import INTEL_8085_OPCODES from './intel8085-opcodes';
 
 // Populate Intel 8080 opcodes
 Object.entries(Z80_OPCODES).forEach(([opcode, handler]) => {
-  const numOpcode = parseInt(opcode);
-  // Add only opcodes that are supported by Intel 8080
-  if (handler(new Uint8Array([numOpcode]), 0).supportsIntel8080) {
-    INTEL_8080_OPCODES[numOpcode] = handler;
+  try {
+    const numOpcode = parseInt(opcode);
+    if (isNaN(numOpcode)) return;
+    
+    // Create a safe byte array for testing
+    const testBytes = new Uint8Array([numOpcode]);
+    const result = handler(testBytes, 0);
+    
+    // Add only opcodes that are supported by Intel 8080
+    if (result && result.supportsIntel8080) {
+      INTEL_8080_OPCODES[numOpcode] = handler;
+    }
+  } catch (error) {
+    console.error(`Error processing opcode ${opcode}:`, error);
   }
 });
 
 // Populate Intel 8085 opcodes (includes all 8080 opcodes plus 8085-specific ones)
 Object.entries(Z80_OPCODES).forEach(([opcode, handler]) => {
-  const numOpcode = parseInt(opcode);
-  // Add opcodes that are supported by Intel 8085
-  if (handler(new Uint8Array([numOpcode]), 0).supportsIntel8085) {
-    INTEL_8085_OPCODES[numOpcode] = handler;
+  try {
+    const numOpcode = parseInt(opcode);
+    if (isNaN(numOpcode)) return;
+    
+    // Create a safe byte array for testing
+    const testBytes = new Uint8Array([numOpcode]);
+    const result = handler(testBytes, 0);
+    
+    // Add opcodes that are supported by Intel 8085
+    if (result && result.supportsIntel8085) {
+      INTEL_8085_OPCODES[numOpcode] = handler;
+    }
+  } catch (error) {
+    console.error(`Error processing opcode ${opcode}:`, error);
   }
 });
 
