@@ -83,7 +83,7 @@ export const disassembleBinary = (
     }
   }
 
-  // Create label map with information about which targets come from jumps
+  // Create label map with information about which targets come from jumps or calls
   const labelAddressesMap = findLabelAddresses(result);
   const labelMap = createLabelMap(labelAddressesMap);
   

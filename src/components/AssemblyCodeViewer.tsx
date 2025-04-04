@@ -1,3 +1,4 @@
+
 import React, { useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -103,15 +104,19 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
     return null;
   }
 
-  // Find all label addresses for display and determine if they are jump targets
+  // Find all label addresses for display 
   const labelMap = new Map<number, string>();
   const jumpTargets = new Set<number>();
+  const callTargets = new Set<number>();
   
-  // First identify all jump targets
+  // First identify all jump and call targets
   disassembly.forEach(({ instruction }) => {
-    if (instruction.targetAddress !== undefined && 
-        (instruction.mnemonic === 'JP' || instruction.mnemonic === 'JR' || instruction.mnemonic === 'DJNZ')) {
-      jumpTargets.add(instruction.targetAddress);
+    if (instruction.targetAddress !== undefined) {
+      if (instruction.mnemonic === 'JP' || instruction.mnemonic === 'JR' || instruction.mnemonic === 'DJNZ') {
+        jumpTargets.add(instruction.targetAddress);
+      } else if (instruction.mnemonic === 'CALL') {
+        callTargets.add(instruction.targetAddress);
+      }
     }
   });
   
@@ -121,7 +126,12 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
       // Check if target is within our disassembly
       const targetInRange = disassembly.some(item => item.address === instruction.targetAddress);
       if (targetInRange) {
-        const prefix = jumpTargets.has(instruction.targetAddress!) ? 'J' : 'L';
+        let prefix = 'L';
+        if (jumpTargets.has(instruction.targetAddress!)) {
+          prefix = 'J'; // Jump target
+        } else if (callTargets.has(instruction.targetAddress!) && !jumpTargets.has(instruction.targetAddress!)) {
+          prefix = 'S'; // Subroutine target (call but not jump)
+        }
         labelMap.set(instruction.targetAddress!, `${prefix}_${formatHex(instruction.targetAddress!, 4)}`);
       }
     }
