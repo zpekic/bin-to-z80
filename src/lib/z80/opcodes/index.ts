@@ -1,13 +1,17 @@
 
 import { OpcodeHandler } from '../types';
+import { LOGICAL_OPCODES } from './logical-opcodes';
 import { IO_OPCODES } from './io-opcodes';
 
 // Import other opcode groups from existing files
 import { BASIC_OPCODES } from './basic-opcodes';
+import { REGISTER_OPCODES } from './register-opcodes';
 import { ARITHMETIC_OPCODES } from './arithmetic-opcodes';
 import { CONTROL_FLOW_OPCODES } from './control-flow-opcodes';
-import { LOGICAL_OPCODES } from './logical-opcodes';
-import { REGISTER_OPCODES } from './register-opcodes';
+
+// Import Intel opcode placeholders
+import INTEL_8080_OPCODES from './intel8080-opcodes';
+import INTEL_8085_OPCODES from './intel8085-opcodes';
 
 // Combine all Z80 opcodes
 export const Z80_OPCODES: Record<number, OpcodeHandler> = {
@@ -18,10 +22,6 @@ export const Z80_OPCODES: Record<number, OpcodeHandler> = {
   ...CONTROL_FLOW_OPCODES,
   ...IO_OPCODES
 };
-
-// Import Intel opcodes (which were forward-declared earlier)
-import INTEL_8080_OPCODES from './intel8080-opcodes';
-import INTEL_8085_OPCODES from './intel8085-opcodes';
 
 // Populate Intel 8080 opcodes
 Object.entries(Z80_OPCODES).forEach(([opcode, handler]) => {
@@ -42,7 +42,7 @@ Object.entries(Z80_OPCODES).forEach(([opcode, handler]) => {
   }
 });
 
-// Populate Intel 8085 opcodes (includes all 8080 opcodes plus 8085-specific ones)
+// Populate Intel 8085 opcodes
 Object.entries(Z80_OPCODES).forEach(([opcode, handler]) => {
   try {
     const numOpcode = parseInt(opcode);
