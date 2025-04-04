@@ -7,5 +7,3 @@
 // Export the main disassembler function
 export { disassembleBinary } from './core-disassembler';
 
-// Re-export utility functions
-export { formatHex, bytesToHexString } from '../formatters';
