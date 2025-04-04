@@ -83,9 +83,9 @@ export const disassembleBinary = (
     }
   }
 
-  // Create label map
-  const labelAddresses = findLabelAddresses(result);
-  const labelMap = createLabelMap(labelAddresses);
+  // Create label map with information about which targets come from jumps
+  const labelAddressesMap = findLabelAddresses(result);
+  const labelMap = createLabelMap(labelAddressesMap);
   
   // Second pass - update operands for labels
   for (const item of result) {

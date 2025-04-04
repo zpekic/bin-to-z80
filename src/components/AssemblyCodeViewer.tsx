@@ -103,14 +103,26 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
     return null;
   }
 
-  // Find all label addresses for display
+  // Find all label addresses for display and determine if they are jump targets
   const labelMap = new Map<number, string>();
+  const jumpTargets = new Set<number>();
+  
+  // First identify all jump targets
   disassembly.forEach(({ instruction }) => {
+    if (instruction.targetAddress !== undefined && 
+        (instruction.mnemonic === 'JP' || instruction.mnemonic === 'JR' || instruction.mnemonic === 'DJNZ')) {
+      jumpTargets.add(instruction.targetAddress);
+    }
+  });
+  
+  // Then create labels with the appropriate prefix
+  disassembly.forEach(({ address, instruction }) => {
     if (instruction.targetAddress !== undefined) {
       // Check if target is within our disassembly
       const targetInRange = disassembly.some(item => item.address === instruction.targetAddress);
       if (targetInRange) {
-        labelMap.set(instruction.targetAddress!, `L_${formatHex(instruction.targetAddress!, 4)}`);
+        const prefix = jumpTargets.has(instruction.targetAddress!) ? 'J' : 'L';
+        labelMap.set(instruction.targetAddress!, `${prefix}_${formatHex(instruction.targetAddress!, 4)}`);
       }
     }
   });
