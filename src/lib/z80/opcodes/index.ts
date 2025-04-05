@@ -13,13 +13,14 @@ import { CONTROL_FLOW_OPCODES } from './control-flow-opcodes';
 import INTEL_8080_OPCODES from './intel8080-opcodes';
 import INTEL_8085_OPCODES from './intel8085-opcodes';
 
-// Combine all Z80 opcodes
+// Import Z80 unprefixed opcodes (complete set from the image)
+import { Z80_NOPREFIX_OPCODES } from './z80-noprefix-opcodes';
+
+// Combine all Z80 opcodes - Use the complete Z80_NOPREFIX_OPCODES as the base
 export const Z80_OPCODES: Record<number, OpcodeHandler> = {
-  ...BASIC_OPCODES,
-  ...REGISTER_OPCODES,
-  ...ARITHMETIC_OPCODES,
+  ...Z80_NOPREFIX_OPCODES,
+  // Add any additional opcodes not covered in the no-prefix set
   ...LOGICAL_OPCODES,
-  ...CONTROL_FLOW_OPCODES,
   ...IO_OPCODES
 };
 

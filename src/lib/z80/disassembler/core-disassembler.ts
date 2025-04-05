@@ -41,6 +41,34 @@ export const disassembleBinary = (
   // First pass - basic disassembly
   while (index < binary.length) {
     const opcode = binary[index];
+    
+    // Special handling for Z80 prefixed opcodes (CB, DD, ED, FD)
+    if (targetInstructionSet === 'Z80' && (opcode === 0xCB || opcode === 0xDD || opcode === 0xED || opcode === 0xFD)) {
+      // Basic handling of prefixed opcodes
+      const prefixType = opcode === 0xCB ? 'CB' : 
+                        opcode === 0xDD ? 'IX' : 
+                        opcode === 0xED ? 'ED' : 'IY';
+      
+      // For now, we'll treat prefixed opcodes as data bytes until we implement them fully
+      const comment = `${prefixType} prefix - Z80 extended instruction`;
+      
+      result.push({
+        address: origin + index,
+        instruction: {
+          mnemonic: prefixType,
+          operands: 'PREFIX',
+          bytes: [opcode],
+          size: 1,
+          comment,
+          address: origin + index,
+          supportsIntel8080: false,
+          supportsIntel8085: false
+        }
+      });
+      index += 1;
+      continue;
+    }
+    
     const handler = opcodes[opcode];
     
     if (handler) {
