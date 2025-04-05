@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -58,15 +58,26 @@ const HexViewer: React.FC<HexViewerProps> = ({
   originAddress = 0,
   fileName = 'binary'
 }) => {
+  const [rows, setRows] = useState<Array<{address: number, bytes: number[]}>>([]);
+
+  // Regenerate rows whenever data or originAddress changes
+  useEffect(() => {
+    if (!data || data.length === 0) {
+      setRows([]);
+      return;
+    }
+
+    // Create rows of 16 bytes each
+    const newRows = [];
+    for (let i = 0; i < data.length; i += 16) {
+      const rowBytes = Array.from(data.slice(i, i + 16));
+      newRows.push({ address: i, bytes: rowBytes });
+    }
+    setRows(newRows);
+  }, [data, originAddress]);
+
   if (!data || data.length === 0) {
     return null;
-  }
-
-  // Create rows of 16 bytes each
-  const rows = [];
-  for (let i = 0; i < data.length; i += 16) {
-    const rowBytes = Array.from(data.slice(i, i + 16));
-    rows.push({ address: i, bytes: rowBytes });
   }
 
   const handleDownloadHex = () => {
