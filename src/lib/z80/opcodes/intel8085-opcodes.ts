@@ -1,13 +1,11 @@
 
 import { OpcodeHandler } from '../types';
-import { Z80_OPCODES } from './index';
+import INTEL_COMMON_OPCODES from '../../cpu/opcodes/intel-common-opcodes';
 
-// Filter Z80 opcodes to only include those supported by Intel 8085
-// and add 8085-specific opcodes
-const INTEL_8085_OPCODES: Record<number, OpcodeHandler> = {};
-
-// We'll populate this in the next step to avoid circular dependencies
-// Export will be handled by index.ts
+// Start with common Intel opcodes
+const INTEL_8085_OPCODES: Record<number, OpcodeHandler> = {
+  ...INTEL_COMMON_OPCODES
+};
 
 // Add 8085-specific opcodes
 const INTEL_8085_SPECIFIC: Record<number, OpcodeHandler> = {
@@ -34,5 +32,7 @@ const INTEL_8085_SPECIFIC: Record<number, OpcodeHandler> = {
   }),
 };
 
-// Export will be handled by index.ts
+// Add 8085-specific opcodes
+Object.assign(INTEL_8085_OPCODES, INTEL_8085_SPECIFIC);
+
 export default INTEL_8085_OPCODES;

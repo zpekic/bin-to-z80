@@ -10,3 +10,6 @@ export { formatHex, bytesToHexString } from './cpu/formatters';
 
 // Export hex formatter utility
 export { convertToIntelHex } from './cpu/hex-formatter';
+
+// Export CPU opcodes
+export { default as INTEL_COMMON_OPCODES } from './cpu/opcodes/intel-common-opcodes';
