@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Copy, Download } from 'lucide-react';
@@ -35,6 +35,14 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
   originAddress = 0
 }) => {
   const codeRef = useRef<HTMLPreElement>(null);
+  const [labelMap, setLabelMap] = useState<Map<number, string>>(new Map());
+
+  // Update label map when disassembly, originAddress, or outputFormat changes
+  useEffect(() => {
+    // Find all label addresses for display using the CPU implementation
+    const labelAddressesMap = findLabelAddresses(disassembly);
+    setLabelMap(createLabelMap(labelAddressesMap));
+  }, [disassembly, originAddress, outputFormat, fileData]);
 
   const handleCopyToClipboard = async () => {
     if (codeRef.current) {
@@ -104,10 +112,6 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
   if (disassembly.length === 0) {
     return null;
   }
-
-  // Find all label addresses for display using the CPU implementation
-  const labelAddressesMap = findLabelAddresses(disassembly);
-  const labelMap = createLabelMap(labelAddressesMap);
 
   // Render the disassembly based on the selected format
   const renderDisassembly = () => {

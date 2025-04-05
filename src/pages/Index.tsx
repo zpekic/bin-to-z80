@@ -82,6 +82,7 @@ const Index = () => {
             {disassembly.length > 0 && (
               <div className="mt-6">
                 <AssemblyCodeViewer 
+                  key={`${originAddress}-${targetInstructionSet}-${outputFormat}-${fileName}`}
                   disassembly={disassembly} 
                   fileName={fileName} 
                   outputFormat={outputFormat}
