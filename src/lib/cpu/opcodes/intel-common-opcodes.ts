@@ -1,4 +1,3 @@
-
 import { OpcodeHandler } from '../types';
 import { formatByteValue, formatWordValue } from '../formatters';
 
@@ -228,6 +227,68 @@ export const INTEL_COMMON_OPCODES: Record<number, OpcodeHandler> = {
     supportsIntel8085: true
   }),
   0x3F: () => ({ mnemonic: 'CMC', operands: '', bytes: [0x3F], size: 1, comment: 'Complement carry flag', supportsIntel8080: true, supportsIntel8085: true }),
+  
+  // 0x40 - 0x4F (Register-Register loads)
+  0x40: () => ({ mnemonic: 'MOV', operands: 'B, B', bytes: [0x40], size: 1, comment: 'Move B to B (no-op)', supportsIntel8080: true, supportsIntel8085: true }),
+  0x41: () => ({ mnemonic: 'MOV', operands: 'B, C', bytes: [0x41], size: 1, comment: 'Move C to B', supportsIntel8080: true, supportsIntel8085: true }),
+  0x42: () => ({ mnemonic: 'MOV', operands: 'B, D', bytes: [0x42], size: 1, comment: 'Move D to B', supportsIntel8080: true, supportsIntel8085: true }),
+  0x43: () => ({ mnemonic: 'MOV', operands: 'B, E', bytes: [0x43], size: 1, comment: 'Move E to B', supportsIntel8080: true, supportsIntel8085: true }),
+  0x44: () => ({ mnemonic: 'MOV', operands: 'B, H', bytes: [0x44], size: 1, comment: 'Move H to B', supportsIntel8080: true, supportsIntel8085: true }),
+  0x45: () => ({ mnemonic: 'MOV', operands: 'B, L', bytes: [0x45], size: 1, comment: 'Move L to B', supportsIntel8080: true, supportsIntel8085: true }),
+  0x46: () => ({ mnemonic: 'MOV', operands: 'B, M', bytes: [0x46], size: 1, comment: 'Move memory at HL to B', supportsIntel8080: true, supportsIntel8085: true }),
+  0x47: () => ({ mnemonic: 'MOV', operands: 'B, A', bytes: [0x47], size: 1, comment: 'Move A to B', supportsIntel8080: true, supportsIntel8085: true }),
+  0x48: () => ({ mnemonic: 'MOV', operands: 'C, B', bytes: [0x48], size: 1, comment: 'Move B to C', supportsIntel8080: true, supportsIntel8085: true }),
+  0x49: () => ({ mnemonic: 'MOV', operands: 'C, C', bytes: [0x49], size: 1, comment: 'Move C to C (no-op)', supportsIntel8080: true, supportsIntel8085: true }),
+  0x4A: () => ({ mnemonic: 'MOV', operands: 'C, D', bytes: [0x4A], size: 1, comment: 'Move D to C', supportsIntel8080: true, supportsIntel8085: true }),
+  0x4B: () => ({ mnemonic: 'MOV', operands: 'C, E', bytes: [0x4B], size: 1, comment: 'Move E to C', supportsIntel8080: true, supportsIntel8085: true }),
+  0x4C: () => ({ mnemonic: 'MOV', operands: 'C, H', bytes: [0x4C], size: 1, comment: 'Move H to C', supportsIntel8080: true, supportsIntel8085: true }),
+  0x4D: () => ({ mnemonic: 'MOV', operands: 'C, L', bytes: [0x4D], size: 1, comment: 'Move L to C', supportsIntel8080: true, supportsIntel8085: true }),
+  0x4E: () => ({ mnemonic: 'MOV', operands: 'C, M', bytes: [0x4E], size: 1, comment: 'Move memory at HL to C', supportsIntel8080: true, supportsIntel8085: true }),
+  0x4F: () => ({ mnemonic: 'MOV', operands: 'C, A', bytes: [0x4F], size: 1, comment: 'Move A to C', supportsIntel8080: true, supportsIntel8085: true }),
+
+  // 0x50 - 0x5F
+  0x50: () => ({ mnemonic: 'MOV', operands: 'D, B', bytes: [0x50], size: 1, comment: 'Move B to D', supportsIntel8080: true, supportsIntel8085: true }),
+  0x51: () => ({ mnemonic: 'MOV', operands: 'D, C', bytes: [0x51], size: 1, comment: 'Move C to D', supportsIntel8080: true, supportsIntel8085: true }),
+  0x52: () => ({ mnemonic: 'MOV', operands: 'D, D', bytes: [0x52], size: 1, comment: 'Move D to D (no-op)', supportsIntel8080: true, supportsIntel8085: true }),
+  0x53: () => ({ mnemonic: 'MOV', operands: 'D, E', bytes: [0x53], size: 1, comment: 'Move E to D', supportsIntel8080: true, supportsIntel8085: true }),
+  0x54: () => ({ mnemonic: 'MOV', operands: 'D, H', bytes: [0x54], size: 1, comment: 'Move H to D', supportsIntel8080: true, supportsIntel8085: true }),
+  0x55: () => ({ mnemonic: 'MOV', operands: 'D, L', bytes: [0x55], size: 1, comment: 'Move L to D', supportsIntel8080: true, supportsIntel8085: true }),
+  0x56: () => ({ mnemonic: 'MOV', operands: 'D, M', bytes: [0x56], size: 1, comment: 'Move memory at HL to D', supportsIntel8080: true, supportsIntel8085: true }),
+  0x57: () => ({ mnemonic: 'MOV', operands: 'D, A', bytes: [0x57], size: 1, comment: 'Move A to D', supportsIntel8080: true, supportsIntel8085: true }),
+  0x58: () => ({ mnemonic: 'MOV', operands: 'E, B', bytes: [0x58], size: 1, comment: 'Move B to E', supportsIntel8080: true, supportsIntel8085: true }),
+  0x59: () => ({ mnemonic: 'MOV', operands: 'E, C', bytes: [0x59], size: 1, comment: 'Move C to E', supportsIntel8080: true, supportsIntel8085: true }),
+  0x5A: () => ({ mnemonic: 'MOV', operands: 'E, D', bytes: [0x5A], size: 1, comment: 'Move D to E', supportsIntel8080: true, supportsIntel8085: true }),
+  0x5B: () => ({ mnemonic: 'MOV', operands: 'E, E', bytes: [0x5B], size: 1, comment: 'Move E to E (no-op)', supportsIntel8080: true, supportsIntel8085: true }),
+  0x5C: () => ({ mnemonic: 'MOV', operands: 'E, H', bytes: [0x5C], size: 1, comment: 'Move H to E', supportsIntel8080: true, supportsIntel8085: true }),
+  0x5D: () => ({ mnemonic: 'MOV', operands: 'E, L', bytes: [0x5D], size: 1, comment: 'Move L to E', supportsIntel8080: true, supportsIntel8085: true }),
+  0x5E: () => ({ mnemonic: 'MOV', operands: 'E, M', bytes: [0x5E], size: 1, comment: 'Move memory at HL to E', supportsIntel8080: true, supportsIntel8085: true }),
+  0x5F: () => ({ mnemonic: 'MOV', operands: 'E, A', bytes: [0x5F], size: 1, comment: 'Move A to E', supportsIntel8080: true, supportsIntel8085: true }),
+
+  // 0x60 - 0x6F
+  0x60: () => ({ mnemonic: 'MOV', operands: 'H, B', bytes: [0x60], size: 1, comment: 'Move B to H', supportsIntel8080: true, supportsIntel8085: true }),
+  0x61: () => ({ mnemonic: 'MOV', operands: 'H, C', bytes: [0x61], size: 1, comment: 'Move C to H', supportsIntel8080: true, supportsIntel8085: true }),
+  0x62: () => ({ mnemonic: 'MOV', operands: 'H, D', bytes: [0x62], size: 1, comment: 'Move D to H', supportsIntel8080: true, supportsIntel8085: true }),
+  0x63: () => ({ mnemonic: 'MOV', operands: 'H, E', bytes: [0x63], size: 1, comment: 'Move E to H', supportsIntel8080: true, supportsIntel8085: true }),
+  0x64: () => ({ mnemonic: 'MOV', operands: 'H, H', bytes: [0x64], size: 1, comment: 'Move H to H (no-op)', supportsIntel8080: true, supportsIntel8085: true }),
+  0x65: () => ({ mnemonic: 'MOV', operands: 'H, L', bytes: [0x65], size: 1, comment: 'Move L to H', supportsIntel8080: true, supportsIntel8085: true }),
+  0x66: () => ({ mnemonic: 'MOV', operands: 'H, M', bytes: [0x66], size: 1, comment: 'Move memory at HL to H', supportsIntel8080: true, supportsIntel8085: true }),
+  0x67: () => ({ mnemonic: 'MOV', operands: 'H, A', bytes: [0x67], size: 1, comment: 'Move A to H', supportsIntel8080: true, supportsIntel8085: true }),
+  0x68: () => ({ mnemonic: 'MOV', operands: 'L, B', bytes: [0x68], size: 1, comment: 'Move B to L', supportsIntel8080: true, supportsIntel8085: true }),
+  0x69: () => ({ mnemonic: 'MOV', operands: 'L, C', bytes: [0x69], size: 1, comment: 'Move C to L', supportsIntel8080: true, supportsIntel8085: true }),
+  0x6A: () => ({ mnemonic: 'MOV', operands: 'L, D', bytes: [0x6A], size: 1, comment: 'Move D to L', supportsIntel8080: true, supportsIntel8085: true }),
+  0x6B: () => ({ mnemonic: 'MOV', operands: 'L, E', bytes: [0x6B], size: 1, comment: 'Move E to L', supportsIntel8080: true, supportsIntel8085: true }),
+  0x6C: () => ({ mnemonic: 'MOV', operands: 'L, H', bytes: [0x6C], size: 1, comment: 'Move H to L', supportsIntel8080: true, supportsIntel8085: true }),
+  0x6D: () => ({ mnemonic: 'MOV', operands: 'L, L', bytes: [0x6D], size: 1, comment: 'Move L to L (no-op)', supportsIntel8080: true, supportsIntel8085: true }),
+  0x6E: () => ({ mnemonic: 'MOV', operands: 'L, M', bytes: [0x6E], size: 1, comment: 'Move memory at HL to L', supportsIntel8080: true, supportsIntel8085: true }),
+  0x6F: () => ({ mnemonic: 'MOV', operands: 'L, A', bytes: [0x6F], size: 1, comment: 'Move A to L', supportsIntel8080: true, supportsIntel8085: true }),
+
+  // 0x70 - 0x75
+  0x70: () => ({ mnemonic: 'MOV', operands: 'M, B', bytes: [0x70], size: 1, comment: 'Move B to memory at HL', supportsIntel8080: true, supportsIntel8085: true }),
+  0x71: () => ({ mnemonic: 'MOV', operands: 'M, C', bytes: [0x71], size: 1, comment: 'Move C to memory at HL', supportsIntel8080: true, supportsIntel8085: true }),
+  0x72: () => ({ mnemonic: 'MOV', operands: 'M, D', bytes: [0x72], size: 1, comment: 'Move D to memory at HL', supportsIntel8080: true, supportsIntel8085: true }),
+  0x73: () => ({ mnemonic: 'MOV', operands: 'M, E', bytes: [0x73], size: 1, comment: 'Move E to memory at HL', supportsIntel8080: true, supportsIntel8085: true }),
+  0x74: () => ({ mnemonic: 'MOV', operands: 'M, H', bytes: [0x74], size: 1, comment: 'Move H to memory at HL', supportsIntel8080: true, supportsIntel8085: true }),
+  0x75: () => ({ mnemonic: 'MOV', operands: 'M, L', bytes: [0x75], size: 1, comment: 'Move L to memory at HL', supportsIntel8080: true, supportsIntel8085: true }),
 
   // Many more common opcodes would be added here...
   // For brevity, I'm only including a representative set
@@ -253,36 +314,4 @@ export const INTEL_COMMON_OPCODES: Record<number, OpcodeHandler> = {
     return {
       mnemonic: 'CALL', 
       operands: formatWordValue(value), 
-      bytes: [0xCD, bytes[i+1], bytes[i+2]], 
-      size: 3,
-      comment: 'Call subroutine',
-      supportsIntel8080: true, 
-      supportsIntel8085: true,
-      targetAddress: value
-    };
-  },
-  0xD3: (bytes, i) => ({
-    mnemonic: 'OUT', 
-    operands: formatByteValue(bytes[i+1]), 
-    bytes: [0xD3, bytes[i+1]], 
-    size: 2,
-    comment: 'Output to port',
-    supportsIntel8080: true, 
-    supportsIntel8085: true,
-    isIOOperation: true
-  }),
-  0xDB: (bytes, i) => ({
-    mnemonic: 'IN', 
-    operands: formatByteValue(bytes[i+1]), 
-    bytes: [0xDB, bytes[i+1]], 
-    size: 2,
-    comment: 'Input from port',
-    supportsIntel8080: true, 
-    supportsIntel8085: true,
-    isIOOperation: true
-  }),
-  0xF3: () => ({ mnemonic: 'DI', operands: '', bytes: [0xF3], size: 1, comment: 'Disable interrupts', supportsIntel8080: true, supportsIntel8085: true }),
-  0xFB: () => ({ mnemonic: 'EI', operands: '', bytes: [0xFB], size: 1, comment: 'Enable interrupts', supportsIntel8080: true, supportsIntel8085: true }),
-};
-
-export default INTEL_COMMON_OPCODES;
+      bytes
