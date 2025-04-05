@@ -6,3 +6,4 @@ import { OpcodeHandler } from '../types';
 const INTEL_8080_OPCODES: Record<number, OpcodeHandler> = {};
 
 export default INTEL_8080_OPCODES;
+
