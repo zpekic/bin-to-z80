@@ -24,12 +24,18 @@ const INTEL_8080_OPCODES: Record<number, OpcodeHandler> = {
   0x28: () => ({ mnemonic: 'NOP', operands: '', bytes: [0x28], size: 1, comment: '8080: Undocumented NOP', supportsIntel8080: true, supportsIntel8085: true }),
   0x30: () => ({ mnemonic: 'NOP', operands: '', bytes: [0x30], size: 1, comment: '8080: Undocumented NOP', supportsIntel8080: true, supportsIntel8085: false }),
   0x38: () => ({ mnemonic: 'NOP', operands: '', bytes: [0x38], size: 1, comment: '8080: Undocumented NOP', supportsIntel8080: true, supportsIntel8085: true }),
+  0xCB: (bytes, i) => {
+    const value = bytes[i+1] | (bytes[i+2] << 8);
+    return {
+      mnemonic: 'JMP', operands: formatWordValue(value), bytes: [0xCB, bytes[i+1], bytes[i+2]], size: 3, 
+      comment: 'Undocumented JMP instruction',
+      supportsIntel8080: true, supportsIntel8085: true, targetAddress: value
+    };
+  },
   0xD9: () => ({ mnemonic: 'NOP', operands: '', bytes: [0xD9], size: 1, comment: '8080: Undocumented NOP', supportsIntel8080: true, supportsIntel8085: false }),
   0xDD: () => ({ mnemonic: 'NOP', operands: '', bytes: [0xDD], size: 1, comment: '8080: Undocumented NOP', supportsIntel8080: true, supportsIntel8085: true }),
   0xED: () => ({ mnemonic: 'NOP', operands: '', bytes: [0xED], size: 1, comment: '8080: Undocumented NOP', supportsIntel8080: true, supportsIntel8085: true }),
   0xFD: () => ({ mnemonic: 'NOP', operands: '', bytes: [0xFD], size: 1, comment: '8080: Undocumented NOP', supportsIntel8080: true, supportsIntel8085: true }),
-  
-  // Any 8080-specific documented opcodes that aren't in common opcodes would go here
 };
 
 export default INTEL_8080_OPCODES;
