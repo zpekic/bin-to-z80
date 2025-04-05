@@ -20,6 +20,10 @@ interface AssemblyCodeViewerProps {
       comment?: string;
       targetAddress?: number;
     };
+    labelInfo?: {
+      label: string;
+      referencedFrom: number[];
+    };
   }[];
   fileName: string;
   outputFormat?: string;
@@ -35,14 +39,27 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
   originAddress = 0
 }) => {
   const codeRef = useRef<HTMLPreElement>(null);
-  const [labelMap, setLabelMap] = useState<Map<number, string>>(new Map());
+  const [labelMap, setLabelMap] = useState<Map<number, {
+    label: string;
+    referencedFrom: number[];
+  }>>(new Map());
 
-  // Update label map when disassembly, originAddress, or outputFormat changes
+  // No need to recreate the label map since it's already included in the disassembly
   useEffect(() => {
-    // Find all label addresses for display using the CPU implementation
-    const labelAddressesMap = findLabelAddresses(disassembly);
-    setLabelMap(createLabelMap(labelAddressesMap));
-  }, [disassembly, originAddress, outputFormat, fileData]);
+    // Extract label map from disassembly for rendering
+    const newLabelMap = new Map<number, {
+      label: string;
+      referencedFrom: number[];
+    }>();
+    
+    disassembly.forEach(item => {
+      if (item.labelInfo) {
+        newLabelMap.set(item.address, item.labelInfo);
+      }
+    });
+    
+    setLabelMap(newLabelMap);
+  }, [disassembly]);
 
   const handleCopyToClipboard = async () => {
     if (codeRef.current) {
@@ -65,12 +82,12 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
     let text;
     if (outputFormat === 'assembly') {
       text = disassembly
-        .map(({ address, instruction }) => {
-          const label = labelMap.get(address);
+        .map(({ address, instruction, labelInfo }) => {
           let line = '';
           
-          if (label) {
-            line += `${label}:\n`;
+          if (labelInfo) {
+            const references = labelInfo.referencedFrom.map(ref => formatHex(ref, 4)).join(', ');
+            line += `${labelInfo.label}: ; Referenced from: ${references}\n`;
           }
           
           line += `        ${instruction.mnemonic} ${instruction.operands}`.trim();
@@ -84,12 +101,21 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
     } else {
       // List format with address and bytes
       text = disassembly
-        .map(({ address, instruction }) => {
+        .map(({ address, instruction, labelInfo }) => {
+          let result = '';
+          
+          if (labelInfo) {
+            const references = labelInfo.referencedFrom.map(ref => formatHex(ref, 4)).join(', ');
+            result += `${labelInfo.label}: ; Referenced from: ${references}\n`;
+          }
+          
           const addressStr = formatHex(address, 4);
           const bytesStr = instruction.bytes.map(b => formatHex(b, 2)).join(' ');
           const instructionStr = `${instruction.mnemonic} ${instruction.operands}`.trim();
           const commentStr = instruction.comment ? `; ${instruction.comment}` : '';
-          return `${addressStr}  ${bytesStr.padEnd(12)}  ${instructionStr.padEnd(20)} ${commentStr}`;
+          result += `${addressStr}  ${bytesStr.padEnd(12)}  ${instructionStr.padEnd(20)} ${commentStr}`;
+          
+          return result;
         })
         .join('\n');
     }
@@ -116,13 +142,18 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
   // Render the disassembly based on the selected format
   const renderDisassembly = () => {
     if (outputFormat === 'assembly') {
-      return disassembly.map(({ address, instruction }, index) => {
-        const label = labelMap.get(address);
+      return disassembly.map(({ address, instruction, labelInfo }, index) => {
         return (
           <React.Fragment key={index}>
-            {label && (
+            {labelInfo && (
               <div className="code-label">
-                <span>{label}:</span>
+                <span>{labelInfo.label}:</span>
+                <span className="text-gray-500 ml-2">
+                  {/* Add references as a comment */}
+                  {labelInfo.referencedFrom.length > 0 && 
+                    `; Referenced from: ${labelInfo.referencedFrom.map(ref => formatHex(ref, 4)).join(', ')}`
+                  }
+                </span>
               </div>
             )}
             <div className="code-line">
@@ -140,13 +171,18 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
       });
     } else {
       // List format
-      return disassembly.map(({ address, instruction }, index) => {
-        const label = labelMap.get(address);
+      return disassembly.map(({ address, instruction, labelInfo }, index) => {
         return (
           <React.Fragment key={index}>
-            {label && (
+            {labelInfo && (
               <div className="code-label">
-                <span>{label}:</span>
+                <span>{labelInfo.label}:</span>
+                <span className="text-gray-500 ml-2">
+                  {/* Add references as a comment */}
+                  {labelInfo.referencedFrom.length > 0 && 
+                    `; Referenced from: ${labelInfo.referencedFrom.map(ref => formatHex(ref, 4)).join(', ')}`
+                  }
+                </span>
               </div>
             )}
             <div className="code-line">

@@ -24,6 +24,10 @@ export const disassembleBinary = (
 ): {
   address: number;
   instruction: Z80Instruction;
+  labelInfo?: {
+    label: string;
+    referencedFrom: number[];
+  }
 }[] => {
   const result: { address: number; instruction: Z80Instruction }[] = [];
   let index = 0;
@@ -115,25 +119,33 @@ export const disassembleBinary = (
   const labelAddressesMap = findLabelAddresses(result);
   const labelMap = createLabelMap(labelAddressesMap);
   
-  // Second pass - update operands for labels
-  for (const item of result) {
-    const { instruction } = item;
+  // Second pass - update operands for labels and add label info
+  const enhancedResult = result.map(item => {
+    const { address, instruction } = item;
+    
+    // Check if this address is a label target
+    const labelInfo = labelMap.get(address);
     
     // Only update operands for instructions that have targetAddress
     if (instruction.targetAddress !== undefined) {
       const targetAddress = instruction.targetAddress;
-      const label = labelMap.get(targetAddress);
+      const targetLabelInfo = labelMap.get(targetAddress);
       
       // Check if this target has a label and it's within our disassembly range
-      if (label && isAddressInRange(targetAddress, origin, origin + binary.length - 1)) {
+      if (targetLabelInfo && isAddressInRange(targetAddress, origin, origin + binary.length - 1)) {
         // Replace the hex address with the label in the operands
         const hexAddress = `${formatHex(targetAddress, 4)}h`;
         if (instruction.operands.includes(hexAddress)) {
-          instruction.operands = instruction.operands.replace(hexAddress, label);
+          instruction.operands = instruction.operands.replace(hexAddress, targetLabelInfo.label);
         }
       }
     }
-  }
+    
+    // Return the item with label info if it's a label target
+    return labelInfo 
+      ? { address, instruction, labelInfo }
+      : { address, instruction };
+  });
   
-  return result;
+  return enhancedResult;
 };

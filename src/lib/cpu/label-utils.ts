@@ -36,18 +36,32 @@ export const isCallInstruction = (instruction: Z80Instruction): boolean => {
 export const findLabelAddresses = (disassembly: {
   address: number;
   instruction: Z80Instruction;
-}[]): Map<number, { isJumpTarget: boolean, isSubroutine: boolean }> => {
-  const labelAddresses = new Map<number, { isJumpTarget: boolean, isSubroutine: boolean }>();
+}[]): Map<number, { 
+  isJumpTarget: boolean, 
+  isSubroutine: boolean,
+  referencedFrom: number[] // Array of addresses that reference this label
+}> => {
+  const labelAddresses = new Map<number, { 
+    isJumpTarget: boolean, 
+    isSubroutine: boolean,
+    referencedFrom: number[]
+  }>();
   
-  for (const { instruction } of disassembly) {
+  for (const { address, instruction } of disassembly) {
     if (instruction.targetAddress !== undefined) {
       // Determine the type of reference
       const isJump = isJumpInstruction(instruction);
       const isCall = isCallInstruction(instruction);
+      const targetAddress = instruction.targetAddress;
       
-      if (labelAddresses.has(instruction.targetAddress)) {
+      if (labelAddresses.has(targetAddress)) {
         // Update existing entry if needed
-        const current = labelAddresses.get(instruction.targetAddress)!;
+        const current = labelAddresses.get(targetAddress)!;
+        
+        // Add the current instruction address to the references
+        if (!current.referencedFrom.includes(address)) {
+          current.referencedFrom.push(address);
+        }
         
         // Priority: Jump > Call > Other
         if (isJump) {
@@ -56,12 +70,13 @@ export const findLabelAddresses = (disassembly: {
           current.isSubroutine = true;
         }
         
-        labelAddresses.set(instruction.targetAddress, current);
+        labelAddresses.set(targetAddress, current);
       } else {
         // Create new entry
-        labelAddresses.set(instruction.targetAddress, {
+        labelAddresses.set(targetAddress, {
           isJumpTarget: isJump,
-          isSubroutine: isCall && !isJump
+          isSubroutine: isCall && !isJump,
+          referencedFrom: [address]
         });
       }
     }
@@ -71,11 +86,26 @@ export const findLabelAddresses = (disassembly: {
 };
 
 // Create a mapping of addresses to labels
-export const createLabelMap = (labelAddresses: Map<number, { isJumpTarget: boolean, isSubroutine: boolean }>): Map<number, string> => {
-  const labelMap = new Map<number, string>();
+export const createLabelMap = (
+  labelAddresses: Map<number, { 
+    isJumpTarget: boolean, 
+    isSubroutine: boolean,
+    referencedFrom: number[]
+  }>
+): Map<number, {
+  label: string,
+  referencedFrom: number[]
+}> => {
+  const labelMap = new Map<number, {
+    label: string,
+    referencedFrom: number[]
+  }>();
   
   labelAddresses.forEach((info, address) => {
-    labelMap.set(address, generateLabel(address, info.isJumpTarget, info.isSubroutine));
+    labelMap.set(address, {
+      label: generateLabel(address, info.isJumpTarget, info.isSubroutine),
+      referencedFrom: info.referencedFrom
+    });
   });
   
   return labelMap;
