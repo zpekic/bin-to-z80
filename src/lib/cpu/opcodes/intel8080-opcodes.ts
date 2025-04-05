@@ -1,6 +1,6 @@
 
 import { OpcodeHandler } from '../types';
-import { formatByteValue, formatWordValue } from '../formatters';
+import { formatWordValue } from '../formatters';
 import INTEL_COMMON_OPCODES from './intel-common-opcodes';
 
 /**

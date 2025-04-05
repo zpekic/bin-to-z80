@@ -1,3 +1,4 @@
+
 import { OpcodeHandler } from '../types';
 import { formatByteValue, formatWordValue } from '../formatters';
 
@@ -314,4 +315,14 @@ export const INTEL_COMMON_OPCODES: Record<number, OpcodeHandler> = {
     return {
       mnemonic: 'CALL', 
       operands: formatWordValue(value), 
-      bytes
+      bytes: [0xCD, bytes[i+1], bytes[i+2]], 
+      size: 3,
+      comment: 'Call unconditional',
+      supportsIntel8080: true, 
+      supportsIntel8085: true,
+      targetAddress: value
+    };
+  }
+};
+
+export default INTEL_COMMON_OPCODES;
