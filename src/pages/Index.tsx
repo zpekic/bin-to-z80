@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 import FileUpload from '@/components/FileUpload';
 import AssemblyCodeViewer from '@/components/AssemblyCodeViewer';
 import Settings from '@/components/Settings';
-import { disassembleBinary } from '@/lib/z80-disassembler';
+import { disassembleBinary } from '@/lib/cpu/disassembler';
 import { ChevronDown, ChevronUp, HelpCircle, ExternalLink } from 'lucide-react';
 import { 
   Card, 

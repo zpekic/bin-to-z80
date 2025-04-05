@@ -1,6 +1,6 @@
 
 /**
- * Z80 Disassembler main module
+ * CPU Disassembler main module
  * Re-exports all disassembler functionality from component modules
  */
 

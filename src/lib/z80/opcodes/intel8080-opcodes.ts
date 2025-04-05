@@ -1,11 +1,8 @@
 
 import { OpcodeHandler } from '../types';
-import { Z80_OPCODES } from './index';
 
-// Filter Z80 opcodes to only include those supported by Intel 8080
+// This file is now deprecated as we're using the CPU implementation
+// It's kept for backward compatibility
 const INTEL_8080_OPCODES: Record<number, OpcodeHandler> = {};
-
-// We'll populate this in the next step to avoid circular dependencies
-// Export will be handled by index.ts
 
 export default INTEL_8080_OPCODES;
