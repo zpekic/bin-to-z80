@@ -1,11 +1,12 @@
+
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatHex } from '@/lib/z80-disassembler';
-import { convertToIntelHex } from '@/lib/z80-disassembler';
+import { formatHex } from '@/lib/cpu/formatters';
+import { bytesToHexString } from '@/lib/cpu/formatters';
 
 interface HexViewerProps {
   data: Uint8Array;
@@ -13,6 +14,43 @@ interface HexViewerProps {
   originAddress?: number;
   fileName?: string;
 }
+
+// Helper function to convert binary data to Intel HEX format
+const convertToIntelHex = (data: Uint8Array, originAddress: number): string => {
+  let hexContent = '';
+  const chunkSize = 16; // 16 bytes per line
+  
+  for (let i = 0; i < data.length; i += chunkSize) {
+    const chunk = data.slice(i, Math.min(i + chunkSize, data.length));
+    const address = originAddress + i;
+    
+    // Calculate record length
+    const recordLength = chunk.length;
+    
+    // Create record
+    let record = `:${formatHex(recordLength, 2)}${formatHex(address, 4)}00`; // Type 00 = Data
+    
+    // Add data bytes
+    for (let j = 0; j < chunk.length; j++) {
+      record += formatHex(chunk[j], 2);
+    }
+    
+    // Calculate checksum
+    let sum = recordLength;
+    sum += (address >> 8) & 0xFF;
+    sum += address & 0xFF;
+    chunk.forEach(byte => { sum += byte; });
+    const checksum = ((~sum + 1) & 0xFF);
+    
+    record += formatHex(checksum, 2);
+    hexContent += record + '\n';
+  }
+  
+  // Add EOF marker
+  hexContent += ':00000001FF\n';
+  
+  return hexContent;
+};
 
 const HexViewer: React.FC<HexViewerProps> = ({ 
   data, 

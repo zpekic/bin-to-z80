@@ -4,9 +4,10 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Copy, Download } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatHex } from '@/lib/z80-disassembler';
+import { formatHex } from '@/lib/cpu/formatters';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import HexViewer from '@/components/HexViewer';
+import { findLabelAddresses, createLabelMap } from '@/lib/cpu/label-utils';
 
 interface AssemblyCodeViewerProps {
   disassembly: {
@@ -104,38 +105,9 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
     return null;
   }
 
-  // Find all label addresses for display 
-  const labelMap = new Map<number, string>();
-  const jumpTargets = new Set<number>();
-  const callTargets = new Set<number>();
-  
-  // First identify all jump and call targets
-  disassembly.forEach(({ instruction }) => {
-    if (instruction.targetAddress !== undefined) {
-      if (instruction.mnemonic === 'JP' || instruction.mnemonic === 'JR' || instruction.mnemonic === 'DJNZ') {
-        jumpTargets.add(instruction.targetAddress);
-      } else if (instruction.mnemonic === 'CALL') {
-        callTargets.add(instruction.targetAddress);
-      }
-    }
-  });
-  
-  // Then create labels with the appropriate prefix
-  disassembly.forEach(({ address, instruction }) => {
-    if (instruction.targetAddress !== undefined) {
-      // Check if target is within our disassembly
-      const targetInRange = disassembly.some(item => item.address === instruction.targetAddress);
-      if (targetInRange) {
-        let prefix = 'L';
-        if (jumpTargets.has(instruction.targetAddress!)) {
-          prefix = 'J'; // Jump target
-        } else if (callTargets.has(instruction.targetAddress!) && !jumpTargets.has(instruction.targetAddress!)) {
-          prefix = 'S'; // Subroutine target (call but not jump)
-        }
-        labelMap.set(instruction.targetAddress!, `${prefix}_${formatHex(instruction.targetAddress!, 4)}`);
-      }
-    }
-  });
+  // Find all label addresses for display using the CPU implementation
+  const labelAddressesMap = findLabelAddresses(disassembly);
+  const labelMap = createLabelMap(labelAddressesMap);
 
   // Render the disassembly based on the selected format
   const renderDisassembly = () => {
