@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -80,7 +79,7 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
     const date = new Date().toISOString().split('T')[0];
     const time = new Date().toLocaleTimeString();
     
-    return [
+    const header = [
       `;----------------------------------------------------------------------`,
       `; File: ${fileName}`,
       `; Size: ${fileData.length} bytes`,
@@ -94,7 +93,15 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
       `; https://lovable.dev/z80-disassembler`,
       `;----------------------------------------------------------------------`,
       ``
-    ].join('\n');
+    ];
+    
+    // Add .org directive when in assembly mode
+    if (outputFormat === 'assembly') {
+      header.push(`.org 0x${formatHex(originAddress, 4)}`);
+      header.push(``); // Add an empty line after the org directive
+    }
+    
+    return header.join('\n');
   };
 
   const handleDownload = () => {
@@ -169,8 +176,9 @@ const AssemblyCodeViewer: React.FC<AssemblyCodeViewerProps> = ({
   // Render the disassembly based on the selected format
   const renderDisassembly = () => {
     // Include the header in the display version as well
-    const header = generateFileHeader().split('\n').map((line, idx) => (
-      <div key={`header-${idx}`} className="code-comment text-muted-foreground">
+    const headerLines = generateFileHeader().split('\n');
+    const header = headerLines.map((line, idx) => (
+      <div key={`header-${idx}`} className={line.startsWith('.org') ? "font-medium" : "code-comment text-muted-foreground"}>
         {line}
       </div>
     ));
