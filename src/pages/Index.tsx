@@ -88,6 +88,7 @@ const Index = () => {
                   outputFormat={outputFormat}
                   fileData={fileData!}
                   originAddress={originAddress}
+                  targetInstructionSet={targetInstructionSet}
                 />
               </div>
             )}
