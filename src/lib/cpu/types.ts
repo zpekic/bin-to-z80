@@ -14,5 +14,4 @@ export type Z80Instruction = {
   supportsIntel8085?: boolean; // Whether this opcode is supported on Intel 8085
 };
 
-export type OpcodeHandler = (bytes: Uint8Array, index: number, address?: number) => Z80Instruction;
-
+export type OpcodeHandler = (bytes: Uint8Array, index: number) => Z80Instruction;

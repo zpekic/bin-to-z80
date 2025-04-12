@@ -1,3 +1,4 @@
+
 import { OpcodeHandler } from '../../types';
 import { format16BitHex, formatByteValue } from '../../formatters';
 
@@ -27,9 +28,9 @@ export const JUMP_OPCODES: Record<number, OpcodeHandler> = {
   0xE9: () => ({ mnemonic: 'JP', operands: '(HL)', bytes: [0xE9], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
   
   // Z80 Relative jumps
-  0x18: (bytes, i, address = 0) => {
+  0x18: (bytes, i, address) => {
     const offset = bytes[i+1];
-    const targetAddress = calculateRelativeJumpTarget(address, offset);
+    const targetAddress = calculateRelativeJumpTarget(address || i, offset);
     return {
       mnemonic: 'JR',
       operands: `${format16BitHex(targetAddress)}`,
@@ -43,9 +44,9 @@ export const JUMP_OPCODES: Record<number, OpcodeHandler> = {
   },
   
   // Z80 Conditional relative jumps
-  0x20: (bytes, i, address = 0) => {
+  0x20: (bytes, i, address) => {
     const offset = bytes[i+1];
-    const targetAddress = calculateRelativeJumpTarget(address, offset);
+    const targetAddress = calculateRelativeJumpTarget(address || i, offset);
     return {
       mnemonic: 'JR',
       operands: `NZ, ${format16BitHex(targetAddress)}`,
@@ -57,9 +58,9 @@ export const JUMP_OPCODES: Record<number, OpcodeHandler> = {
       supportsIntel8085: false
     };
   },
-  0x28: (bytes, i, address = 0) => {
+  0x28: (bytes, i, address) => {
     const offset = bytes[i+1];
-    const targetAddress = calculateRelativeJumpTarget(address, offset);
+    const targetAddress = calculateRelativeJumpTarget(address || i, offset);
     return {
       mnemonic: 'JR',
       operands: `Z, ${format16BitHex(targetAddress)}`,
@@ -71,9 +72,9 @@ export const JUMP_OPCODES: Record<number, OpcodeHandler> = {
       supportsIntel8085: false
     };
   },
-  0x30: (bytes, i, address = 0) => {
+  0x30: (bytes, i, address) => {
     const offset = bytes[i+1];
-    const targetAddress = calculateRelativeJumpTarget(address, offset);
+    const targetAddress = calculateRelativeJumpTarget(address || i, offset);
     return {
       mnemonic: 'JR',
       operands: `NC, ${format16BitHex(targetAddress)}`,
@@ -85,9 +86,9 @@ export const JUMP_OPCODES: Record<number, OpcodeHandler> = {
       supportsIntel8085: false
     };
   },
-  0x38: (bytes, i, address = 0) => {
+  0x38: (bytes, i, address) => {
     const offset = bytes[i+1];
-    const targetAddress = calculateRelativeJumpTarget(address, offset);
+    const targetAddress = calculateRelativeJumpTarget(address || i, offset);
     return {
       mnemonic: 'JR',
       operands: `C, ${format16BitHex(targetAddress)}`,
@@ -101,9 +102,9 @@ export const JUMP_OPCODES: Record<number, OpcodeHandler> = {
   },
   
   // DJNZ - Z80 specific
-  0x10: (bytes, i, address = 0) => {
+  0x10: (bytes, i, address) => {
     const offset = bytes[i+1];
-    const targetAddress = calculateRelativeJumpTarget(address, offset);
+    const targetAddress = calculateRelativeJumpTarget(address || i, offset);
     return {
       mnemonic: 'DJNZ',
       operands: `${format16BitHex(targetAddress)}`,
