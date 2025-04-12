@@ -3,7 +3,12 @@ import { Z80Instruction } from './types';
 import { formatHex } from './formatters';
 
 // Generate a label for an address based on instruction type
-export const generateLabel = (address: number, isJumpTarget: boolean = false, isSubroutine: boolean = false): string => {
+export const generateLabel = (address: number, isJumpTarget: boolean = false, isSubroutine: boolean = false, isRelativeJump: boolean = false): string => {
+  if (isRelativeJump) {
+    // For relative jumps, use R_ prefix
+    return `R_${formatHex(address, 4)}`;
+  }
+  
   let prefix = 'L'; // Default prefix
   if (isJumpTarget) {
     prefix = 'J';
@@ -26,6 +31,11 @@ export const isJumpInstruction = (instruction: Z80Instruction): boolean => {
          instruction.mnemonic === 'DJNZ';
 };
 
+// Determine if an instruction is a relative jump instruction (JR, DJNZ)
+export const isRelativeJumpInstruction = (instruction: Z80Instruction): boolean => {
+  return instruction.mnemonic === 'JR' || instruction.mnemonic === 'DJNZ';
+};
+
 // Determine if an instruction is a call instruction
 export const isCallInstruction = (instruction: Z80Instruction): boolean => {
   // Check mnemonic for call-related instructions
@@ -39,11 +49,13 @@ export const findLabelAddresses = (disassembly: {
 }[]): Map<number, { 
   isJumpTarget: boolean, 
   isSubroutine: boolean,
-  referencedFrom: number[] // Array of addresses that reference this label
+  isRelativeJump: boolean,
+  referencedFrom: number[]
 }> => {
   const labelAddresses = new Map<number, { 
     isJumpTarget: boolean, 
     isSubroutine: boolean,
+    isRelativeJump: boolean,
     referencedFrom: number[]
   }>();
   
@@ -52,6 +64,7 @@ export const findLabelAddresses = (disassembly: {
       // Determine the type of reference
       const isJump = isJumpInstruction(instruction);
       const isCall = isCallInstruction(instruction);
+      const isRelativeJump = isRelativeJumpInstruction(instruction);
       const targetAddress = instruction.targetAddress;
       
       if (labelAddresses.has(targetAddress)) {
@@ -63,10 +76,12 @@ export const findLabelAddresses = (disassembly: {
           current.referencedFrom.push(address);
         }
         
-        // Priority: Jump > Call > Other
-        if (isJump) {
+        // Priority: Relative Jump > Jump > Call > Other
+        if (isRelativeJump) {
+          current.isRelativeJump = true;
+        } else if (isJump && !current.isRelativeJump) {
           current.isJumpTarget = true;
-        } else if (isCall && !current.isJumpTarget) {
+        } else if (isCall && !current.isJumpTarget && !current.isRelativeJump) {
           current.isSubroutine = true;
         }
         
@@ -74,8 +89,9 @@ export const findLabelAddresses = (disassembly: {
       } else {
         // Create new entry
         labelAddresses.set(targetAddress, {
-          isJumpTarget: isJump,
+          isJumpTarget: isJump && !isRelativeJump,
           isSubroutine: isCall && !isJump,
+          isRelativeJump: isRelativeJump,
           referencedFrom: [address]
         });
       }
@@ -90,6 +106,7 @@ export const createLabelMap = (
   labelAddresses: Map<number, { 
     isJumpTarget: boolean, 
     isSubroutine: boolean,
+    isRelativeJump: boolean,
     referencedFrom: number[]
   }>
 ): Map<number, {
@@ -103,7 +120,7 @@ export const createLabelMap = (
   
   labelAddresses.forEach((info, address) => {
     labelMap.set(address, {
-      label: generateLabel(address, info.isJumpTarget, info.isSubroutine),
+      label: generateLabel(address, info.isJumpTarget, info.isSubroutine, info.isRelativeJump),
       referencedFrom: info.referencedFrom
     });
   });
