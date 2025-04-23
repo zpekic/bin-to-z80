@@ -1,4 +1,3 @@
-
 import { Z80Instruction } from '../types';
 import { formatHex } from '../formatters';
 import { 
@@ -8,6 +7,7 @@ import {
 } from '../label-utils';
 import { Z80_OPCODES, INTEL_8080_OPCODES, INTEL_8085_OPCODES } from '../opcodes';
 import { processInstruction } from './instruction-processor';
+import { ED_PREFIX_OPCODES } from '../opcodes/z80-extended/ed-prefix';
 
 /**
  * Disassemble a binary file into Z80 instructions
@@ -42,9 +42,48 @@ export const disassembleBinary = (
     opcodes = Z80_OPCODES;
   }
 
-  // First pass - basic disassembly
   while (index < binary.length) {
     const opcode = binary[index];
+    
+    // Special handling for Z80 prefixed opcodes (CB, DD, ED, FD)
+    if (targetInstructionSet === 'Z80' && opcode === 0xED) {
+      // Handle ED prefix opcodes
+      const secondByte = binary[index + 1];
+      const edHandler = ED_PREFIX_OPCODES[secondByte];
+      
+      if (edHandler) {
+        const instruction = edHandler(binary, index + 1);
+        const processedInstruction = processInstruction(
+          instruction,
+          index,
+          origin,
+          targetInstructionSet
+        );
+        
+        result.push({
+          address: origin + index,
+          instruction: processedInstruction
+        });
+        
+        index += instruction.size;
+      } else {
+        // Unknown ED prefix opcode
+        result.push({
+          address: origin + index,
+          instruction: {
+            mnemonic: 'DB',
+            operands: `EDh,${formatHex(secondByte, 2)}h`,
+            bytes: [0xED, secondByte],
+            size: 2,
+            comment: 'Unknown ED prefix opcode',
+            supportsIntel8080: false,
+            supportsIntel8085: false
+          }
+        });
+        index += 2;
+      }
+      continue;
+    }
     
     // Special handling for Z80 prefixed opcodes (CB, DD, ED, FD)
     if (targetInstructionSet === 'Z80' && (opcode === 0xCB || opcode === 0xDD || opcode === 0xED || opcode === 0xFD)) {
