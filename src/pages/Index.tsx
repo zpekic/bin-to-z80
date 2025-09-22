@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import FileUpload from '@/components/FileUpload';
 import AssemblyCodeViewer from '@/components/AssemblyCodeViewer';
 import Settings from '@/components/Settings';
-import { disassembleBinary } from '@/lib/cpu/disassembler';
+import { useDisassembly } from '@/hooks/useDisassembly';
+import { useDisassemblySettings } from '@/hooks/useDisassemblySettings';
 import { ChevronDown, ChevronUp, HelpCircle, ExternalLink } from 'lucide-react';
 import { 
   Card, 
@@ -23,45 +24,28 @@ import {
 } from '@/components/ui/tooltip';
 
 const Index = () => {
-  const [fileData, setFileData] = useState<Uint8Array | null>(null);
-  const [fileName, setFileName] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [originAddress, setOriginAddress] = useState<number>(0x0000);
-  const [outputFormat, setOutputFormat] = useState<string>('list');
-  const [targetInstructionSet, setTargetInstructionSet] = useState<string>('Z80');
-  const [disassembly, setDisassembly] = useState<ReturnType<typeof disassembleBinary>>([]);
-  const [showInfo, setShowInfo] = useState<boolean>(false);
+  const { settings, updateSetting } = useDisassemblySettings();
+  const { 
+    fileData, 
+    fileName, 
+    isLoading, 
+    disassembly, 
+    error,
+    handleFileLoaded,
+    performDisassembly 
+  } = useDisassembly();
+  const [showInfo, setShowInfo] = React.useState<boolean>(false);
 
-  const handleFileLoaded = (data: Uint8Array, name: string) => {
-    setIsLoading(true);
-    setFileData(data);
-    setFileName(name);
-    
-    // Use setTimeout to ensure the UI doesn't freeze
-    setTimeout(() => {
-      try {
-        const result = disassembleBinary(data, originAddress, targetInstructionSet);
-        setDisassembly(result);
-      } catch (error) {
-        console.error('Disassembly error:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }, 100);
-  };
-
-  // Update disassembly when origin address or target instruction set changes
-  React.useEffect(() => {
+  // Update disassembly when settings change
+  useEffect(() => {
     if (fileData) {
-      try {
-        // Pass the targetInstructionSet to disassembleBinary
-        const result = disassembleBinary(fileData, originAddress, targetInstructionSet);
-        setDisassembly(result);
-      } catch (error) {
-        console.error('Disassembly error:', error);
-      }
+      performDisassembly(fileData, settings.originAddress, settings.targetInstructionSet);
     }
-  }, [fileData, originAddress, targetInstructionSet]);
+  }, [fileData, settings.originAddress, settings.targetInstructionSet, performDisassembly]);
+
+  const onFileLoaded = (data: Uint8Array, name: string) => {
+    handleFileLoaded(data, name, settings.originAddress, settings.targetInstructionSet);
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -77,18 +61,24 @@ const Index = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
-            <FileUpload onFileLoaded={handleFileLoaded} isLoading={isLoading} />
+            <FileUpload onFileLoaded={onFileLoaded} isLoading={isLoading} />
+            
+            {error && (
+              <div className="mt-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                <p className="text-destructive text-sm">{error}</p>
+              </div>
+            )}
             
             {disassembly.length > 0 && (
               <div className="mt-6">
                 <AssemblyCodeViewer 
-                  key={`${originAddress}-${targetInstructionSet}-${outputFormat}-${fileName}`}
+                  key={`${settings.originAddress}-${settings.targetInstructionSet}-${settings.outputFormat}-${fileName}`}
                   disassembly={disassembly} 
                   fileName={fileName} 
-                  outputFormat={outputFormat}
+                  outputFormat={settings.outputFormat}
                   fileData={fileData!}
-                  originAddress={originAddress}
-                  targetInstructionSet={targetInstructionSet}
+                  originAddress={settings.originAddress}
+                  targetInstructionSet={settings.targetInstructionSet}
                 />
               </div>
             )}
@@ -96,12 +86,12 @@ const Index = () => {
           
           <div className="space-y-6">
             <Settings 
-              originAddress={originAddress} 
-              setOriginAddress={setOriginAddress}
-              outputFormat={outputFormat}
-              setOutputFormat={setOutputFormat}
-              targetInstructionSet={targetInstructionSet}
-              setTargetInstructionSet={setTargetInstructionSet}
+              originAddress={settings.originAddress} 
+              setOriginAddress={(address) => updateSetting('originAddress', address)}
+              outputFormat={settings.outputFormat}
+              setOutputFormat={(format) => updateSetting('outputFormat', format)}
+              targetInstructionSet={settings.targetInstructionSet}
+              setTargetInstructionSet={(set) => updateSetting('targetInstructionSet', set)}
             />
             
             <Card>
@@ -195,7 +185,7 @@ const Index = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Instruction Set:</span>
-                      <span className="font-medium">{targetInstructionSet}</span>
+                      <span className="font-medium">{settings.targetInstructionSet}</span>
                     </div>
                   </div>
                 ) : (

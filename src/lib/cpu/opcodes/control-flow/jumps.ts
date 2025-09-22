@@ -1,227 +1,59 @@
 
 import { OpcodeHandler } from '../../types';
-import { format16BitHex, formatByteValue } from '../../formatters';
+import { createConditionalJump, createRelativeJump, createUnconditionalJump } from '../opcode-utils';
+import { format16BitHex } from '../../formatters';
 
-// Helper for calculating relative jump target address
-const calculateRelativeJumpTarget = (currentAddress: number, offset: number): number => {
-  // Offset is a signed 8-bit value (-128 to 127)
-  const signedOffset = offset > 127 ? offset - 256 : offset;
-  // Calculate target address (PC + 2 + offset)
-  return (currentAddress + 2 + signedOffset) & 0xFFFF;
-};
-
-// Jump opcodes
+// Jump opcodes using utility functions to reduce duplication
 export const JUMP_OPCODES: Record<number, OpcodeHandler> = {
   // Unconditional jumps
   0xC3: (bytes, i) => {
     const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
-    return {
-      mnemonic: 'JP',
-      operands: `${format16BitHex(targetAddress)}`,
-      bytes: [0xC3, bytes[i+1], bytes[i+2]],
-      size: 3,
-      targetAddress,
-      supportsIntel8080: true,
-      supportsIntel8085: true
-    };
+    return createUnconditionalJump(
+      0xC3, 
+      format16BitHex(targetAddress),
+      [0xC3, bytes[i+1], bytes[i+2]],
+      targetAddress
+    );
   },
-  0xE9: () => ({ mnemonic: 'JP', operands: '(HL)', bytes: [0xE9], size: 1, supportsIntel8080: true, supportsIntel8085: true }),
+  
+  0xE9: () => createUnconditionalJump(0xE9, '(HL)', [0xE9]),
   
   // Z80 Relative jumps
-  0x18: (bytes, i, address = 0) => {
-    const offset = bytes[i+1];
-    const targetAddress = calculateRelativeJumpTarget(address, offset);
-    return {
-      mnemonic: 'JR',
-      operands: `${format16BitHex(targetAddress)}`,
-      bytes: [0x18, offset],
-      size: 2,
-      targetAddress,
-      comment: 'Relative jump',
-      supportsIntel8080: false,
-      supportsIntel8085: false
-    };
-  },
+  0x18: (bytes, i, address = 0) => createRelativeJump(
+    null, 
+    [0x18, bytes[i+1]], 
+    address, 
+    'Relative jump'
+  ),
   
   // Z80 Conditional relative jumps
-  0x20: (bytes, i, address = 0) => {
-    const offset = bytes[i+1];
-    const targetAddress = calculateRelativeJumpTarget(address, offset);
-    return {
-      mnemonic: 'JR',
-      operands: `NZ, ${format16BitHex(targetAddress)}`,
-      bytes: [0x20, offset],
-      size: 2,
-      targetAddress,
-      comment: 'Relative jump if not zero',
-      supportsIntel8080: false,
-      supportsIntel8085: false
-    };
-  },
-  0x28: (bytes, i, address = 0) => {
-    const offset = bytes[i+1];
-    const targetAddress = calculateRelativeJumpTarget(address, offset);
-    return {
-      mnemonic: 'JR',
-      operands: `Z, ${format16BitHex(targetAddress)}`,
-      bytes: [0x28, offset],
-      size: 2,
-      targetAddress,
-      comment: 'Relative jump if zero',
-      supportsIntel8080: false,
-      supportsIntel8085: false
-    };
-  },
-  0x30: (bytes, i, address = 0) => {
-    const offset = bytes[i+1];
-    const targetAddress = calculateRelativeJumpTarget(address, offset);
-    return {
-      mnemonic: 'JR',
-      operands: `NC, ${format16BitHex(targetAddress)}`,
-      bytes: [0x30, offset],
-      size: 2,
-      targetAddress,
-      comment: 'Relative jump if no carry',
-      supportsIntel8080: false,
-      supportsIntel8085: false
-    };
-  },
-  0x38: (bytes, i, address = 0) => {
-    const offset = bytes[i+1];
-    const targetAddress = calculateRelativeJumpTarget(address, offset);
-    return {
-      mnemonic: 'JR',
-      operands: `C, ${format16BitHex(targetAddress)}`,
-      bytes: [0x38, offset],
-      size: 2,
-      targetAddress,
-      comment: 'Relative jump if carry',
-      supportsIntel8080: false,
-      supportsIntel8085: false
-    };
-  },
+  0x20: (bytes, i, address = 0) => createRelativeJump('NZ', [0x20, bytes[i+1]], address, 'Relative jump if not zero'),
+  0x28: (bytes, i, address = 0) => createRelativeJump('Z', [0x28, bytes[i+1]], address, 'Relative jump if zero'),
+  0x30: (bytes, i, address = 0) => createRelativeJump('NC', [0x30, bytes[i+1]], address, 'Relative jump if no carry'),
+  0x38: (bytes, i, address = 0) => createRelativeJump('C', [0x38, bytes[i+1]], address, 'Relative jump if carry'),
   
   // DJNZ - Z80 specific
   0x10: (bytes, i, address = 0) => {
-    const offset = bytes[i+1];
-    const targetAddress = calculateRelativeJumpTarget(address, offset);
+    const targetAddress = bytes[i+1];
     return {
-      mnemonic: 'DJNZ',
-      operands: `${format16BitHex(targetAddress)}`,
-      bytes: [0x10, offset],
-      size: 2,
-      targetAddress,
-      comment: 'Decrement B and jump if not zero',
-      supportsIntel8080: false,
-      supportsIntel8085: false
+      ...createRelativeJump(null, [0x10, bytes[i+1]], address, 'Decrement B and jump if not zero'),
+      mnemonic: 'DJNZ'
     };
   },
   
-  // Zero flag conditional jumps
-  0xC2: (bytes, i) => {
-    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
-    return {
-      mnemonic: 'JP',
-      operands: `NZ, ${format16BitHex(targetAddress)}`,
-      bytes: [0xC2, bytes[i+1], bytes[i+2]],
-      size: 3,
-      targetAddress,
-      supportsIntel8080: true,
-      supportsIntel8085: true
-    };
-  },
-  0xCA: (bytes, i) => {
-    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
-    return {
-      mnemonic: 'JP',
-      operands: `Z, ${format16BitHex(targetAddress)}`,
-      bytes: [0xCA, bytes[i+1], bytes[i+2]],
-      size: 3,
-      targetAddress,
-      supportsIntel8080: true,
-      supportsIntel8085: true
-    };
-  },
+  // Conditional jumps - Zero flag
+  0xC2: (bytes, i) => createConditionalJump(0xC2, 'NZ', [0xC2, bytes[i+1], bytes[i+2]]),
+  0xCA: (bytes, i) => createConditionalJump(0xCA, 'Z', [0xCA, bytes[i+1], bytes[i+2]]),
   
-  // Carry flag conditional jumps
-  0xD2: (bytes, i) => {
-    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
-    return {
-      mnemonic: 'JP',
-      operands: `NC, ${format16BitHex(targetAddress)}`,
-      bytes: [0xD2, bytes[i+1], bytes[i+2]],
-      size: 3,
-      targetAddress,
-      supportsIntel8080: true,
-      supportsIntel8085: true
-    };
-  },
-  0xDA: (bytes, i) => {
-    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
-    return {
-      mnemonic: 'JP',
-      operands: `C, ${format16BitHex(targetAddress)}`,
-      bytes: [0xDA, bytes[i+1], bytes[i+2]],
-      size: 3,
-      targetAddress,
-      supportsIntel8080: true,
-      supportsIntel8085: true
-    };
-  },
+  // Conditional jumps - Carry flag  
+  0xD2: (bytes, i) => createConditionalJump(0xD2, 'NC', [0xD2, bytes[i+1], bytes[i+2]]),
+  0xDA: (bytes, i) => createConditionalJump(0xDA, 'C', [0xDA, bytes[i+1], bytes[i+2]]),
   
-  // Parity flag conditional jumps
-  0xE2: (bytes, i) => {
-    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
-    return {
-      mnemonic: 'JP',
-      operands: `PO, ${format16BitHex(targetAddress)}`,
-      bytes: [0xE2, bytes[i+1], bytes[i+2]],
-      size: 3,
-      comment: 'Jump if parity odd',
-      targetAddress,
-      supportsIntel8080: true,
-      supportsIntel8085: true
-    };
-  },
-  0xEA: (bytes, i) => {
-    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
-    return {
-      mnemonic: 'JP',
-      operands: `PE, ${format16BitHex(targetAddress)}`,
-      bytes: [0xEA, bytes[i+1], bytes[i+2]],
-      size: 3,
-      comment: 'Jump if parity even',
-      targetAddress,
-      supportsIntel8080: true,
-      supportsIntel8085: true
-    };
-  },
+  // Conditional jumps - Parity flag
+  0xE2: (bytes, i) => createConditionalJump(0xE2, 'PO', [0xE2, bytes[i+1], bytes[i+2]], 'Jump if parity odd'),
+  0xEA: (bytes, i) => createConditionalJump(0xEA, 'PE', [0xEA, bytes[i+1], bytes[i+2]], 'Jump if parity even'),
   
-  // Sign flag conditional jumps
-  0xF2: (bytes, i) => {
-    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
-    return {
-      mnemonic: 'JP',
-      operands: `P, ${format16BitHex(targetAddress)}`,
-      bytes: [0xF2, bytes[i+1], bytes[i+2]],
-      size: 3,
-      comment: 'Jump if positive (S flag = 0)',
-      targetAddress,
-      supportsIntel8080: true,
-      supportsIntel8085: true
-    };
-  },
-  0xFA: (bytes, i) => {
-    const targetAddress = bytes[i+1] + (bytes[i+2] << 8);
-    return {
-      mnemonic: 'JP',
-      operands: `M, ${format16BitHex(targetAddress)}`,
-      bytes: [0xFA, bytes[i+1], bytes[i+2]],
-      size: 3,
-      comment: 'Jump if minus/negative (S flag = 1)',
-      targetAddress,
-      supportsIntel8080: true,
-      supportsIntel8085: true
-    };
-  },
+  // Conditional jumps - Sign flag
+  0xF2: (bytes, i) => createConditionalJump(0xF2, 'P', [0xF2, bytes[i+1], bytes[i+2]], 'Jump if positive (S flag = 0)'),
+  0xFA: (bytes, i) => createConditionalJump(0xFA, 'M', [0xFA, bytes[i+1], bytes[i+2]], 'Jump if minus/negative (S flag = 1)'),
 };

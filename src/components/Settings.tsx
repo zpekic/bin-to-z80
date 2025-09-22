@@ -14,19 +14,19 @@ import {
 interface SettingsProps {
   originAddress: number;
   setOriginAddress: (address: number) => void;
-  outputFormat?: string;
-  setOutputFormat?: (format: string) => void;
-  targetInstructionSet?: string;
-  setTargetInstructionSet?: (set: string) => void;
+  outputFormat: string;
+  setOutputFormat: (format: string) => void;
+  targetInstructionSet: string;
+  setTargetInstructionSet: (set: string) => void;
 }
 
 const Settings: React.FC<SettingsProps> = ({ 
   originAddress, 
   setOriginAddress,
-  outputFormat = 'list',
-  setOutputFormat = () => {},
-  targetInstructionSet = 'Z80',
-  setTargetInstructionSet = () => {}
+  outputFormat,
+  setOutputFormat,
+  targetInstructionSet,
+  setTargetInstructionSet
 }) => {
   const [addressInput, setAddressInput] = useState(originAddress.toString(16).toUpperCase());
   
