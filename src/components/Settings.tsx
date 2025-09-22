@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import { CPU_ARCHITECTURES, OUTPUT_FORMATS } from '@/lib/cpu/constants';
 
 interface SettingsProps {
   originAddress: number;
@@ -85,15 +86,15 @@ const Settings: React.FC<SettingsProps> = ({
               <SelectValue placeholder="Select instruction set" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Z80">Z80</SelectItem>
-              <SelectItem value="Intel 8080">Intel 8080</SelectItem>
-              <SelectItem value="Intel 8085">Intel 8085</SelectItem>
+              <SelectItem value={CPU_ARCHITECTURES.Z80}>Z80</SelectItem>
+              <SelectItem value={CPU_ARCHITECTURES.INTEL_8080}>Intel 8080</SelectItem>
+              <SelectItem value={CPU_ARCHITECTURES.INTEL_8085}>Intel 8085</SelectItem>
             </SelectContent>
           </Select>
           <p className="text-xs text-muted-foreground mt-1">
-            {targetInstructionSet === 'Z80' 
+            {targetInstructionSet === CPU_ARCHITECTURES.Z80
               ? 'Full Z80 instruction set' 
-              : targetInstructionSet === 'Intel 8080' 
+              : targetInstructionSet === CPU_ARCHITECTURES.INTEL_8080
                 ? 'Intel 8080 compatibility mode' 
                 : 'Intel 8085 extended instructions'}
           </p>
@@ -109,8 +110,8 @@ const Settings: React.FC<SettingsProps> = ({
               <SelectValue placeholder="Select format" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="assembly">Assembly Format</SelectItem>
-              <SelectItem value="list">List Format</SelectItem>
+              <SelectItem value={OUTPUT_FORMATS.ASSEMBLY}>Assembly Format</SelectItem>
+              <SelectItem value={OUTPUT_FORMATS.LIST}>List Format</SelectItem>
             </SelectContent>
           </Select>
         </div>

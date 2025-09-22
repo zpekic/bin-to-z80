@@ -8,6 +8,7 @@ import {
 import { Z80_OPCODES, INTEL_8080_OPCODES, INTEL_8085_OPCODES } from '../opcodes';
 import { processInstruction } from './instruction-processor';
 import { ED_PREFIX_OPCODES } from '../opcodes/z80-extended/ed-prefix';
+import { CPU_ARCHITECTURES, OPCODE_PREFIXES } from '../constants';
 
 /**
  * Disassemble a binary file into Z80 instructions
@@ -34,9 +35,9 @@ export const disassembleBinary = (
 
   // Select the appropriate opcode set based on the target instruction set
   let opcodes;
-  if (targetInstructionSet === 'Intel 8080') {
+  if (targetInstructionSet === CPU_ARCHITECTURES.INTEL_8080) {
     opcodes = INTEL_8080_OPCODES;
-  } else if (targetInstructionSet === 'Intel 8085') {
+  } else if (targetInstructionSet === CPU_ARCHITECTURES.INTEL_8085) {
     opcodes = INTEL_8085_OPCODES;
   } else {
     opcodes = Z80_OPCODES;
@@ -46,7 +47,7 @@ export const disassembleBinary = (
     const opcode = binary[index];
     
     // Special handling for Z80 prefixed opcodes (CB, DD, ED, FD)
-    if (targetInstructionSet === 'Z80' && opcode === 0xED) {
+    if (targetInstructionSet === CPU_ARCHITECTURES.Z80 && opcode === OPCODE_PREFIXES.ED) {
       // Handle ED prefix opcodes
       const secondByte = binary[index + 1];
       const edHandler = ED_PREFIX_OPCODES[secondByte];
@@ -86,11 +87,16 @@ export const disassembleBinary = (
     }
     
     // Special handling for Z80 prefixed opcodes (CB, DD, ED, FD)
-    if (targetInstructionSet === 'Z80' && (opcode === 0xCB || opcode === 0xDD || opcode === 0xED || opcode === 0xFD)) {
+    if (targetInstructionSet === CPU_ARCHITECTURES.Z80 && (
+      opcode === OPCODE_PREFIXES.CB || 
+      opcode === OPCODE_PREFIXES.DD || 
+      opcode === OPCODE_PREFIXES.ED || 
+      opcode === OPCODE_PREFIXES.FD
+    )) {
       // Basic handling of prefixed opcodes
-      const prefixType = opcode === 0xCB ? 'CB' : 
-                        opcode === 0xDD ? 'IX' : 
-                        opcode === 0xED ? 'ED' : 'IY';
+      const prefixType = opcode === OPCODE_PREFIXES.CB ? 'CB' : 
+                        opcode === OPCODE_PREFIXES.DD ? 'IX' : 
+                        opcode === OPCODE_PREFIXES.ED ? 'ED' : 'IY';
       
       // For now, we'll treat prefixed opcodes as data bytes until we implement them fully
       const comment = `${prefixType} prefix - Z80 extended instruction`;

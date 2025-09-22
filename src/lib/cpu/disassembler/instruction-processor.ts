@@ -1,5 +1,6 @@
 
 import { Z80Instruction } from '../types';
+import { CPU_ARCHITECTURES } from '../constants';
 
 /**
  * Process an instruction to:
@@ -35,14 +36,14 @@ export const processInstruction = (
   const isSupported8085 = processedInstruction.supportsIntel8085;
   
   // Add warning for Z80-only opcodes when targeting Intel processors
-  if (!isSupported8080 && (targetInstructionSet === 'Intel 8080' || targetInstructionSet === 'Intel 8085')) {
+  if (!isSupported8080 && (targetInstructionSet === CPU_ARCHITECTURES.INTEL_8080 || targetInstructionSet === CPU_ARCHITECTURES.INTEL_8085)) {
     processedInstruction.comment = processedInstruction.comment 
       ? `${processedInstruction.comment} - WARNING: Z80 ONLY - NOT SUPPORTED` 
       : 'WARNING: Z80 ONLY - NOT SUPPORTED';
   }
   
   // Add warning for 8085-specific opcodes when targeting non-8085 processors
-  if (isSupported8085 && !isSupported8080 && targetInstructionSet === 'Intel 8080') {
+  if (isSupported8085 && !isSupported8080 && targetInstructionSet === CPU_ARCHITECTURES.INTEL_8080) {
     processedInstruction.comment = processedInstruction.comment 
       ? `${processedInstruction.comment} - WARNING: 8085 ONLY - NOT SUPPORTED IN 8080` 
       : 'WARNING: 8085 ONLY - NOT SUPPORTED IN 8080';
