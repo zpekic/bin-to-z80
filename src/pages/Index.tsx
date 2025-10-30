@@ -49,7 +49,7 @@ const Index = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      <Header selectedCpu={settings.targetInstructionSet} />
       
       <main className="flex-1 container px-4 py-8 mx-auto max-w-6xl space-y-8">
         <div className="max-w-3xl mx-auto text-center space-y-4 animate-slide-down">
